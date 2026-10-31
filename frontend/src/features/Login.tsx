@@ -45,15 +45,15 @@ export default function Login() {
             <p className="ls-ink2 text-xs uppercase tracking-[0.22em] text-side-muted">Smart Solar Management</p>
           </div>
         </div>
-        <div className="relative max-w-md">
-          <p className="text-2xl font-semibold leading-tight tracking-tight">From the first enquiry to year twenty of the warranty, in one place.</p>
-          <p className="mt-3 text-base text-side-muted">Leads, surveys, kits, serial-tracked stock, installs, PM Surya Ghar paperwork, service and profit per job.</p>
+        <div className="relative max-w-sm pb-2">
+          <p className="text-balance text-2xl font-semibold leading-snug tracking-tight">From enquiry to warranty, all in one place.</p>
+          <p className="mt-2 text-base text-side-muted">Leads, surveys, stock, installs, subsidy and service.</p>
         </div>
       </section>
-      <section className="flex flex-col justify-center px-6 py-10 sm:px-12">
+      <section className="flex flex-col justify-center px-6 py-6 sm:px-12">
         <div className="mx-auto w-full max-w-sm animate-pop">
           {/* Full logo with tagline. Multiply blends its cream background into the beige page in light mode. */}
-          <div className="mx-auto mb-6 aspect-[10/8.4] w-full max-w-[300px] overflow-hidden rounded-xl">
+          <div className="mx-auto mb-4 aspect-[10/8.4] w-full max-w-[230px] overflow-hidden rounded-xl">
             <BrandFull className="h-full w-full object-cover mix-blend-multiply dark:mix-blend-normal" />
           </div>
           <h1 className="text-xl font-semibold">Sign in to Rayora</h1>
