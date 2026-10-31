@@ -1,5 +1,6 @@
 """SuryaOps API entry point."""
 from fastapi import FastAPI
+from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -31,6 +32,21 @@ settings.upload_dir.mkdir(parents=True, exist_ok=True)
 app.mount("/uploads", StaticFiles(directory=settings.upload_dir), name="uploads")
 
 
-@app.get("/")
-def root():
-    return {"name": "SuryaOps API", "docs": "/docs", "health": f"{API}/health"}
+# In production the built React app is served from here too: one service, one URL, no CORS.
+DIST = settings.frontend_dist
+if (DIST / "index.html").exists():
+    app.mount("/assets", StaticFiles(directory=DIST / "assets"), name="assets")
+
+    @app.get("/{path:path}", include_in_schema=False)
+    def spa(path: str):
+        if path.startswith(("api/", "uploads/", "docs", "openapi.json")):
+            from app.core.errors import AppError
+            raise AppError("NOT_FOUND", "Not Found", 404)
+        file = DIST / path
+        if path and file.is_file() and DIST in file.resolve().parents:
+            return FileResponse(file)
+        return FileResponse(DIST / "index.html")  # React Router handles the page
+else:
+    @app.get("/")
+    def root():
+        return {"name": "SuryaOps API", "docs": "/docs", "health": f"{API}/health"}
