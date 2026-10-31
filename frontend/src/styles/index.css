@@ -1,0 +1,91 @@
+@import "@fontsource-variable/inter";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ---------- Design tokens: daylight (light) ---------- */
+:root, [data-theme="light"] {
+  color-scheme: light;
+  --bg: 244 246 249;          /* silica */
+  --surface: 255 255 255;
+  --raised: 255 255 255;
+  --sunken: 238 241 245;
+  --line: 227 231 237;
+  --line-strong: 203 210 220;
+  --ink: 21 26 37;
+  --muted: 89 98 115;
+  --faint: 138 147 163;
+  --sun: 242 169 0;           /* marigold sun */
+  --sun-strong: 214 146 0;
+  --sun-soft: 254 243 214;
+  --sun-ink: 21 26 37;        /* dark text on amber for contrast */
+  --cell: 44 78 158;          /* silicon cell blue */
+  --cell-soft: 228 235 250;
+  --ok: 4 120 87;   --ok-soft: 220 245 234;
+  --warn: 180 83 9; --warn-soft: 254 240 220;
+  --bad: 190 18 60; --bad-soft: 254 228 233;
+  --info: 3 105 161; --info-soft: 224 242 254;
+  --side: 21 26 37;  --side-ink: 236 239 244; --side-muted: 148 157 173; --side-hover: 36 43 58;
+  --shadow: 15 23 42;
+  --chart-1: #2C4E9E;  /* revenue  (validated: CVD dE 33.7) */
+  --chart-2: #D69200;  /* cost     (contrast < 3:1: legend + tooltip + table provided) */
+}
+
+/* ---------- Design tokens: night sky (dark) ---------- */
+[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: 13 18 32;
+  --surface: 20 27 44;
+  --raised: 26 34 54;
+  --sunken: 16 22 37;
+  --line: 37 46 68;
+  --line-strong: 55 66 92;
+  --ink: 232 236 243;
+  --muted: 150 160 180;
+  --faint: 105 115 138;
+  --sun: 247 185 40;
+  --sun-strong: 255 202 77;
+  --sun-soft: 58 45 16;
+  --sun-ink: 18 20 28;
+  --cell: 128 158 232;
+  --cell-soft: 31 42 75;
+  --ok: 52 211 153;  --ok-soft: 14 53 43;
+  --warn: 251 176 84; --warn-soft: 60 40 14;
+  --bad: 251 113 133; --bad-soft: 66 22 34;
+  --info: 125 196 250; --info-soft: 15 44 70;
+  --side: 9 13 24;  --side-ink: 226 231 240; --side-muted: 128 138 160; --side-hover: 24 31 50;
+  --shadow: 0 0 0;
+  --chart-1: #7391DB;
+  --chart-2: #C4870F;
+}
+
+@layer base {
+  html { -webkit-text-size-adjust: 100%; }
+  body { @apply bg-bg text-ink font-sans text-base antialiased; font-feature-settings: "cv11", "ss01"; }
+  ::selection { background: rgb(var(--sun) / 0.35); }
+  :focus-visible { outline: 2px solid rgb(var(--sun)); outline-offset: 2px; border-radius: 4px; }
+  h1, h2, h3 { letter-spacing: -0.011em; }
+  input, select, textarea { font: inherit; }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  }
+}
+
+@layer components {
+  .num { font-variant-numeric: tabular-nums; }
+  .field {
+    @apply h-9 w-full rounded border border-line-strong bg-surface px-3 text-base text-ink placeholder:text-faint
+      transition-colors hover:border-faint focus:border-sun focus:outline-none focus:ring-2 focus:ring-sun/25
+      disabled:cursor-not-allowed disabled:opacity-60;
+  }
+  textarea.field { @apply h-auto py-2; }
+  .scroll-thin { scrollbar-width: thin; scrollbar-color: rgb(var(--line-strong)) transparent; }
+}
+
+/* Print: invoices and the director's report print cleanly (Save as PDF) */
+@media print {
+  [data-theme] { --bg: 255 255 255; --surface: 255 255 255; --ink: 0 0 0; --muted: 70 70 70; --line: 210 210 210; }
+  .no-print { display: none !important; }
+  body { background: #fff; }
+  main { padding: 0 !important; }
+}
