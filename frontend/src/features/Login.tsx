@@ -3,7 +3,7 @@ import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { HOME_FOR, useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { Field, Input } from "@/components/ui/form";
-import { BrandMark } from "@/components/shared/Brand";
+import { BrandFull, BrandMark } from "@/components/shared/Brand";
 import { ThemeToggle } from "@/components/shared/ThemeToggle";
 import { LoginScene } from "@/components/shared/LoginScene";
 import type { ApiError } from "@/lib/api";
@@ -38,7 +38,13 @@ export default function Login() {
     <div className="grid min-h-screen lg:grid-cols-[1fr_520px]">
       <section className="relative hidden overflow-hidden bg-side text-side-ink lg:flex lg:flex-col lg:justify-between lg:p-12">
         <LoginScene />
-        <div className="relative flex items-center gap-3"><BrandMark className="h-9 w-9" /><span className="text-md font-semibold">SuryaOps</span></div>
+        <div className="relative flex items-center gap-3">
+          <BrandMark className="h-10 w-10" />
+          <div className="leading-tight">
+            <p className="ls-ink text-md font-semibold">Rayora</p>
+            <p className="ls-ink2 text-xs uppercase tracking-[0.22em] text-side-muted">Smart Solar Management</p>
+          </div>
+        </div>
         <div className="relative max-w-md">
           <p className="text-2xl font-semibold leading-tight tracking-tight">From the first enquiry to year twenty of the warranty, in one place.</p>
           <p className="mt-3 text-base text-side-muted">Leads, surveys, kits, serial-tracked stock, installs, PM Surya Ghar paperwork, service and profit per job.</p>
@@ -46,8 +52,11 @@ export default function Login() {
       </section>
       <section className="flex flex-col justify-center px-6 py-10 sm:px-12">
         <div className="mx-auto w-full max-w-sm animate-pop">
-          <div className="mb-8 flex items-center justify-between lg:hidden"><BrandMark /><ThemeToggle /></div>
-          <h1 className="text-xl font-semibold">Sign in</h1>
+          {/* Full logo with tagline. Multiply blends its cream background into the beige page in light mode. */}
+          <div className="mx-auto mb-6 aspect-[10/8.4] w-full max-w-[300px] overflow-hidden rounded-xl">
+            <BrandFull className="h-full w-full object-cover mix-blend-multiply dark:mix-blend-normal" />
+          </div>
+          <h1 className="text-xl font-semibold">Sign in to Rayora</h1>
           <p className="mt-1 text-muted">Use your SunPower Solutions work account.</p>
           <form onSubmit={submit} className="mt-6 space-y-4">
             <Field label="Email"><Input type="email" autoComplete="username" value={email} onChange={(e) => setEmail(e.target.value)} required /></Field>
@@ -64,7 +73,7 @@ export default function Login() {
               ))}
             </div>
           </div>
-          <div className="mt-6 hidden lg:block"><ThemeToggle /></div>
+          <div className="mt-6"><ThemeToggle /></div>
         </div>
       </section>
     </div>

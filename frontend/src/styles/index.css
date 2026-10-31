@@ -3,66 +3,68 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ---------- Design tokens: daylight (light) ---------- */
+/* ---------- Rayora design tokens: daylight (light) ----------
+   Palette: olive #606C38, dark olive #283618, terracotta #BC6C25, sand #DDA15E, beige #FEFAE0.
+   Values are space-separated RGB because Tailwind reads them as rgb(var(--x) / alpha). */
 :root, [data-theme="light"] {
   color-scheme: light;
-  --bg: 244 246 249;          /* silica */
+  --bg: 254 250 224;          /* beige #FEFAE0 */
   --surface: 255 255 255;
   --raised: 255 255 255;
-  --sunken: 238 241 245;
-  --line: 227 231 237;
-  --line-strong: 203 210 220;
-  --ink: 21 26 37;
-  --muted: 89 98 115;
-  --faint: 138 147 163;
-  --sun: 242 169 0;           /* marigold sun */
-  --sun-strong: 214 146 0;
-  --sun-soft: 254 243 214;
-  --sun-ink: 21 26 37;        /* dark text on amber for contrast */
-  --cell: 44 78 158;          /* silicon cell blue */
-  --cell-soft: 228 235 250;
-  --ok: 4 120 87;   --ok-soft: 220 245 234;
-  --warn: 180 83 9; --warn-soft: 254 240 220;
-  --bad: 190 18 60; --bad-soft: 254 228 233;
-  --info: 3 105 161; --info-soft: 224 242 254;
-  --side: 21 26 37;  --side-ink: 236 239 244; --side-muted: 148 157 173; --side-hover: 36 43 58;
-  --shadow: 15 23 42;
-  --chart-1: #2C4E9E;  /* revenue  (validated: CVD dE 33.7) */
-  --chart-2: #D69200;  /* cost     (contrast < 3:1: legend + tooltip + table provided) */
+  --sunken: 245 240 211;
+  --line: 229 223 197;        /* #E5DFC5 */
+  --line-strong: 205 198 165;
+  --ink: 40 54 24;            /* dark olive #283618 */
+  --muted: 96 108 56;         /* olive #606C38 */
+  --faint: 139 146 104;
+  --sun: 176 98 30;           /* terracotta: primary actions */
+  --sun-strong: 146 78 20;
+  --sun-soft: 248 232 205;
+  --sun-ink: 254 250 224;     /* cream text on terracotta */
+  --cell: 96 108 56;          /* olive: links, secondary accent */
+  --cell-soft: 232 236 211;
+  --ok: 79 119 45;   --ok-soft: 226 237 213;
+  --warn: 163 106 30; --warn-soft: 250 236 208;
+  --bad: 196 69 54;  --bad-soft: 250 226 220;
+  --info: 70 105 110; --info-soft: 224 235 230;
+  --side: 40 54 24;  --side-ink: 254 250 224; --side-muted: 190 196 160; --side-hover: 56 72 34;
+  --shadow: 40 54 24;
+  --chart-1: #606C38;  /* revenue: olive */
+  --chart-2: #BC6C25;  /* cost: terracotta */
 }
 
-/* ---------- Design tokens: night sky (dark) ---------- */
+/* ---------- Rayora design tokens: night (dark) ---------- */
 [data-theme="dark"] {
   color-scheme: dark;
-  --bg: 13 18 32;
-  --surface: 20 27 44;
-  --raised: 26 34 54;
-  --sunken: 16 22 37;
-  --line: 37 46 68;
-  --line-strong: 55 66 92;
-  --ink: 232 236 243;
-  --muted: 150 160 180;
-  --faint: 105 115 138;
-  --sun: 247 185 40;
-  --sun-strong: 255 202 77;
-  --sun-soft: 58 45 16;
-  --sun-ink: 18 20 28;
-  --cell: 128 158 232;
-  --cell-soft: 31 42 75;
-  --ok: 52 211 153;  --ok-soft: 14 53 43;
-  --warn: 251 176 84; --warn-soft: 60 40 14;
-  --bad: 251 113 133; --bad-soft: 66 22 34;
-  --info: 125 196 250; --info-soft: 15 44 70;
-  --side: 9 13 24;  --side-ink: 226 231 240; --side-muted: 128 138 160; --side-hover: 24 31 50;
+  --bg: 22 29 13;
+  --surface: 31 40 19;
+  --raised: 39 49 25;
+  --sunken: 18 24 10;
+  --line: 56 67 36;
+  --line-strong: 80 93 54;
+  --ink: 244 240 214;
+  --muted: 183 190 150;
+  --faint: 128 136 98;
+  --sun: 221 161 94;          /* sand #DDA15E */
+  --sun-strong: 232 180 120;
+  --sun-soft: 68 54 27;
+  --sun-ink: 30 38 16;
+  --cell: 169 185 120;
+  --cell-soft: 44 56 28;
+  --ok: 140 184 100;  --ok-soft: 38 56 26;
+  --warn: 221 161 94; --warn-soft: 66 52 28;
+  --bad: 232 120 104; --bad-soft: 70 34 30;
+  --info: 130 180 170; --info-soft: 30 52 50;
+  --side: 17 23 9;  --side-ink: 244 240 214; --side-muted: 170 178 138; --side-hover: 34 44 20;
   --shadow: 0 0 0;
-  --chart-1: #7391DB;
-  --chart-2: #C4870F;
+  --chart-1: #A9B978;
+  --chart-2: #DDA15E;
 }
 
 @layer base {
   html { -webkit-text-size-adjust: 100%; }
   body { @apply bg-bg text-ink font-sans text-base antialiased; font-feature-settings: "cv11", "ss01"; }
-  ::selection { background: rgb(var(--sun) / 0.35); }
+  ::selection { background: rgb(var(--sun) / 0.3); }
   :focus-visible { outline: 2px solid rgb(var(--sun)); outline-offset: 2px; border-radius: 4px; }
   h1, h2, h3 { letter-spacing: -0.011em; }
   input, select, textarea { font: inherit; }
