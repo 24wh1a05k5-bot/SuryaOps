@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from "react";
-import { useParams, useSearchParams } from "react-router-dom";
+import { Link, useParams, useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { CheckCircle2, Circle, Clock3, ShieldCheck, ShieldX, Sun } from "lucide-react";
 import { api, ApiError } from "@/lib/api";
@@ -18,7 +18,7 @@ function PublicFrame({ children, company, wide }: { children: ReactNode; company
     <div className="min-h-screen bg-bg">
       <header className="border-b border-line bg-surface">
         <div className={`mx-auto flex h-14 items-center gap-3 px-4 ${wide ? "max-w-6xl" : "max-w-xl"}`}>
-          <BrandMark className="h-7 w-7" /><span className="font-semibold">{company ?? "SunPower Solutions"}</span>
+          <Link to="/" className="flex items-center gap-3"><BrandMark className="h-7 w-7" /><span className="font-semibold">{company ?? "SunPower Solutions"}</span></Link>
           <div className="no-print ml-auto"><ThemeToggle /></div>
         </div>
       </header>
@@ -29,7 +29,11 @@ function PublicFrame({ children, company, wide }: { children: ReactNode; company
 
 /** Website enquiry form: lands in the sales inbox instantly. */
 export function EnquiryForm() {
-  const [f, setF] = useState({ name: "", phone: "", city: "Hyderabad", address: "", requested_kw: "3", system_type: "on_grid", wants_subsidy: true, monthly_bill: "" });
+  // The landing page's savings calculator passes ?kw=3&bill=2500 so the customer doesn't type them again
+  const [params] = useSearchParams();
+  const kw0 = ["1", "2", "3", "5"].includes(params.get("kw") ?? "") ? params.get("kw")! : "3";
+  const bill0 = /^\d{1,6}$/.test(params.get("bill") ?? "") ? params.get("bill")! : "";
+  const [f, setF] = useState({ name: "", phone: "", city: "Hyderabad", address: "", requested_kw: kw0, system_type: "on_grid", wants_subsidy: true, monthly_bill: bill0 });
   const send = useAction(() => api("/public/leads", { body: { ...f, requested_kw: Number(f.requested_kw), monthly_bill: f.monthly_bill ? Number(f.monthly_bill) : null, address: f.address || null } }), { silentError: true });
   const errs = fieldErrors(send.error);
   const set = (k: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => setF({ ...f, [k]: e.target.value });

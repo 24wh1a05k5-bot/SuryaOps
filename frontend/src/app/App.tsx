@@ -30,6 +30,7 @@ const TechPay = lazy(() => import("@/features/Finance").then((m) => ({ default: 
 const Settings = lazy(() => import("@/features/Finance").then((m) => ({ default: m.Settings })));
 const Enquiry = lazy(() => import("@/features/Public").then((m) => ({ default: m.EnquiryForm })));
 const UnitPage = lazy(() => import("@/features/Public").then((m) => ({ default: m.UnitPage })));
+const Landing = lazy(() => import("@/features/Landing"));
 const TrackPage = lazy(() => import("@/features/Public").then((m) => ({ default: m.TrackPage })));
 const Shared = lazy(() => import("@/features/Public").then((m) => ({ default: m.SharedReport })));
 const PrintReport = lazy(() => import("@/features/Public").then((m) => ({ default: m.PrintReport })));
@@ -49,9 +50,11 @@ function Protected({ children, roles }: { children: ReactNode; roles?: Role[] })
   return <>{children}</>;
 }
 
-function Home() {
-  const { user } = useAuth();
-  return <Navigate to={user ? HOME_FOR[user.role] : "/login"} replace />;
+/** "/" is the public customer website; signed-in staff go straight to their own home screen. */
+function Root() {
+  const { user, loading } = useAuth();
+  if (loading) return <div className="grid min-h-screen place-items-center"><Skeleton className="h-10 w-48" /></div>;
+  return user ? <Navigate to={HOME_FOR[user.role]} replace /> : <Landing />;
 }
 
 const R = (roles: Role[], el: ReactNode) => <Protected roles={roles}><AppShell><Suspense fallback={<PageFallback />}>{el}</Suspense></AppShell></Protected>;
@@ -66,7 +69,7 @@ export default function App() {
         <Route path="/track/:code" element={<TrackPage />} />
         <Route path="/shared/:token" element={<Shared />} />
         <Route path="/reports/print" element={<Protected roles={["accounts"]}><PrintReport /></Protected>} />
-        <Route path="/" element={<Protected><Home /></Protected>} />
+        <Route path="/" element={<Root />} />
         <Route path="/dashboard" element={R(["accounts"], <Dashboard />)} />
         <Route path="/leads" element={R(["sales", "support"], <Leads />)} />
         <Route path="/leads/:id" element={R(["sales", "support"], <LeadDetail />)} />
