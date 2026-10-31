@@ -1,4 +1,4 @@
-# SuryaOps Documentation
+# Rayora Documentation
 
 Rooftop solar operations platform for **SunPower Solutions**, built for the Odoo Hackathon final (Solar Installation Management System).
 
@@ -34,7 +34,7 @@ This document explains what the system does, how it is built, what every module 
 
 SunPower completes about 40 rooftop installations a month, holds high-value stock (panels, inverters, batteries), runs a 15-person crew and handles service calls. Today this runs on WhatsApp, calls and paper registers.
 
-SuryaOps replaces that with one system that follows a customer from **"I'm interested"** to **"repaired in year 20"**:
+Rayora replaces that with one system that follows a customer from **"I'm interested"** to **"repaired in year 20"**:
 
 ```
 Enquiry → Qualification → Site survey → Quote (from a kit) → Confirm
@@ -80,7 +80,7 @@ Enquiry → Qualification → Site survey → Quote (from a kit) → Confirm
 
 ### Backend
 
-| Technology | Role in SuryaOps |
+| Technology | Role in Rayora |
 |---|---|
 | **Python 3.11+** | Language for all backend code |
 | **FastAPI** | Web framework. Routes requests, injects dependencies (database session, current user), and generates interactive API docs at `/docs` |
@@ -98,7 +98,7 @@ Enquiry → Qualification → Site survey → Quote (from a kit) → Confirm
 
 ### Frontend
 
-| Technology | Role in SuryaOps |
+| Technology | Role in Rayora |
 |---|---|
 | **React 18** | Component-based UI |
 | **TypeScript** | Type safety across the app (strict mode) |
@@ -905,7 +905,7 @@ Idempotency-Key: 4f1c...
 
 ## 17. Odoo mapping
 
-| SuryaOps | Odoo equivalent |
+| Rayora | Odoo equivalent |
 |---|---|
 | Leads and qualification | CRM |
 | Kit templates to order lines | Sales + product kits / Bill of Materials |

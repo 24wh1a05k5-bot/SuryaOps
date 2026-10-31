@@ -107,6 +107,7 @@ def job_serials(db: Session, job: Job) -> dict:
     units = db.execute(select(StockUnit).where(StockUnit.order_id == job.order_id)).scalars().all()
     linked_ids = set(db.execute(select(JobSerial.stock_unit_id).where(JobSerial.job_id == job.id)).scalars())
     return {"expected": [{"serial_no": u.serial_no, "product": u.product.name, "category": u.product.category,
+                          "warranty_months": u.product.warranty_months, "warranty_end": u.warranty_end.isoformat() if u.warranty_end else None,
                           "linked": u.id in linked_ids} for u in units]}
 
 

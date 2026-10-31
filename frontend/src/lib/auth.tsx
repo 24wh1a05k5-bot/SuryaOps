@@ -8,7 +8,7 @@ export type User = { id: number; name: string; email: string; role: Role; phone?
 
 type Ctx = { user: User | null; loading: boolean; login: (email: string, password: string) => Promise<User>; logout: () => void };
 const AuthContext = createContext<Ctx | null>(null);
-const KEY = "suryaops-session";
+const KEY = "rayora-session";
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);

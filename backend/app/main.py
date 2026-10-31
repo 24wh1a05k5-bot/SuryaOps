@@ -1,4 +1,4 @@
-"""SuryaOps API entry point."""
+"""Rayora API entry point."""
 from fastapi import FastAPI
 from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -14,7 +14,7 @@ from app.routers import core, crm, ops, sales, service
 
 setup_logging()
 
-app = FastAPI(title="SuryaOps API", version="1.0.0",
+app = FastAPI(title="Rayora API", version="1.0.0",
               description="Rooftop solar operations: CRM → survey → quote → stock → dispatch → install → "
                           "subsidy → service → profit.")
 app.state.limiter = limiter
@@ -49,4 +49,4 @@ if (DIST / "index.html").exists():
 else:
     @app.get("/")
     def root():
-        return {"name": "SuryaOps API", "docs": "/docs", "health": f"{API}/health"}
+        return {"name": "Rayora API", "docs": "/docs", "health": f"{API}/health"}

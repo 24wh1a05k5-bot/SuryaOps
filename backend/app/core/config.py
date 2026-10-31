@@ -13,7 +13,7 @@ BASE_DIR = Path(__file__).resolve().parents[2]
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=BASE_DIR / ".env", extra="ignore")
 
-    app_name: str = "SuryaOps"
+    app_name: str = "Rayora"
     database_url: str = "postgresql+psycopg://suryaops:suryaops@localhost:5432/suryaops"
     jwt_secret: str = "change-me-in-.env"
     jwt_expire_hours: int = 8

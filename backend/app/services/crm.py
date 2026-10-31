@@ -50,9 +50,12 @@ def create_lead(db: Session, data: PublicLeadIn | LeadIn, user: User | None, sou
 def update_lead(db: Session, lead_id: int, data: LeadUpdate, user: User) -> Lead:
     lead = get_lead(db, lead_id, lock=True)
     check_version(lead, data.version)
-    if lead.status in ("won", "lost"):
+    if lead.status == "lost":
         raise AppError("LEAD_CLOSED", "This lead is closed and can't be edited.")
     values = data.model_dump(exclude_unset=True, exclude={"version"})
+    if lead.status == "won":  # after the sale, only the customer's subsidy paperwork can still be corrected
+        allowed = {"consumer_no", "aadhaar_name", "bill_name", "bank_account_name", "bank_aadhaar_seeded", "address", "city"}
+        values = {k: v for k, v in values.items() if k in allowed}
     customer_fields = {"monthly_bill", "consumer_no", "aadhaar_name", "bill_name", "bank_account_name",
                        "bank_aadhaar_seeded", "address", "city"}
     for key, val in values.items():

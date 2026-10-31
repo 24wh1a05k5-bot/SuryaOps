@@ -1,13 +1,13 @@
 # Render Blueprint: New -> Blueprint -> pick this repo. Creates the database and the web service.
 databases:
-  - name: suryaops-db
+  - name: rayora-db
     plan: free
-    databaseName: suryaops
-    user: suryaops
+    databaseName: rayora
+    user: rayora
 
 services:
   - type: web
-    name: suryaops
+    name: rayora
     runtime: docker
     plan: free
     dockerfilePath: ./Dockerfile
@@ -15,7 +15,7 @@ services:
     envVars:
       - key: DATABASE_URL
         fromDatabase:
-          name: suryaops-db
+          name: rayora-db
           property: connectionString
       - key: JWT_SECRET
         generateValue: true

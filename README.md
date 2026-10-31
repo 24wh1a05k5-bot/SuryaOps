@@ -1,4 +1,4 @@
-# SuryaOps
+# Rayora
 
 **Rooftop solar operations platform**, (Solar Installation Management System).
 

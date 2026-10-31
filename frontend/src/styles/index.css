@@ -85,9 +85,14 @@
 }
 
 /* Print: invoices and the director's report print cleanly (Save as PDF) */
+@media screen { #cert-print-root { display: none; } }
+
 @media print {
   [data-theme] { --bg: 255 255 255; --surface: 255 255 255; --ink: 0 0 0; --muted: 70 70 70; --line: 210 210 210; }
   .no-print { display: none !important; }
   body { background: #fff; }
   main { padding: 0 !important; }
+  /* Handover certificate: print only the copied certificate */
+  body.printing-cert > *:not(#cert-print-root) { display: none !important; }
+  #cert-print-root .cert-print { border: 0; box-shadow: none; padding: 0; }
 }

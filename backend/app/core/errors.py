@@ -11,7 +11,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import StaleDataError
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-log = logging.getLogger("suryaops")
+log = logging.getLogger("rayora")
 
 
 class AppError(Exception):

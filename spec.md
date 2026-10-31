@@ -1,4 +1,4 @@
-# SuryaOps — Product & Technical Specification
+# Rayora — Product & Technical Specification
 
 > **Rooftop Solar Operations Platform** — Odoo Hackathon Final (Solar Installation Management System)
 >
@@ -19,7 +19,7 @@
 
 SunPower Solutions completes ~40 rooftop projects/month, keeps high-value stock (panels, inverters, batteries), runs a 15-technician crew, and handles endless service calls. Today:
 
-| Area | Today | SuryaOps fixes it by |
+| Area | Today | Rayora fixes it by |
 |---|---|---|
 | Enquiries | Lost across WhatsApp, calls, web form | One lead inbox, duplicate detection |
 | Quotes | Typed by hand, parts missed | Kit templates auto-fill every part |
@@ -112,7 +112,7 @@ No cloud services. Postgres runs on the laptop (native install or `docker compos
 
 ### Repository structure
 ```
-suryaops/
+rayora/
 ├── backend/
 │   ├── app/
 │   │   ├── main.py
@@ -620,7 +620,7 @@ pytest + httpx against a test database:
 
 ## 14. Odoo mapping (for the jury)
 
-| SuryaOps | Odoo equivalent |
+| Rayora | Odoo equivalent |
 |---|---|
 | Leads & qualification | CRM |
 | Kit templates → order lines | Sales + Bill of Materials / product kits |

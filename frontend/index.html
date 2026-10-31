@@ -9,7 +9,7 @@
     <script>
       // Apply the saved theme before first paint so there is no flash.
       try {
-        var t = localStorage.getItem("suryaops-theme") || "system";
+        var t = localStorage.getItem("rayora-theme") || "system";
         var dark = t === "dark" || (t === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
         document.documentElement.dataset.theme = dark ? "dark" : "light";
       } catch (e) { document.documentElement.dataset.theme = "light"; }

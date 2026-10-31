@@ -4,7 +4,7 @@ import { safeStorage } from "./utils";
 export type ThemeChoice = "light" | "dark" | "system";
 type Ctx = { choice: ThemeChoice; resolved: "light" | "dark"; setChoice: (c: ThemeChoice) => void };
 const ThemeContext = createContext<Ctx | null>(null);
-const KEY = "suryaops-theme";
+const KEY = "rayora-theme";
 
 function systemDark() {
   return typeof matchMedia !== "undefined" && matchMedia("(prefers-color-scheme: dark)").matches;

@@ -74,7 +74,7 @@ const STEPS = [
 
 function InstallFlow({ job }: { job: any }) {
   const qc = useQueryClient();
-  const draftKey = `suryaops-install-draft-${job.id}`;
+  const draftKey = `rayora-install-draft-${job.id}`;
   const saved = useMemo(() => { try { return JSON.parse(safeStorage.get(draftKey) ?? "{}"); } catch { return {}; } }, [draftKey]);
   const [step, setStep] = useState<(typeof STEPS)[number]["key"]>(saved.step ?? "serials");
   const [serialText, setSerialText] = useState<string>(saved.serialText ?? "");

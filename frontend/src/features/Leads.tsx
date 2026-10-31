@@ -236,7 +236,7 @@ export function LeadDetail() {
       <div className="mb-6"><StatusStepper stages={STAGES.lead} current={l.status} terminal={{ status: "lost", label: `Lost: ${l.lost_reason ?? ""}` }} /></div>
       <div className="grid gap-6 xl:grid-cols-[1fr_360px]">
         <div className="space-y-6">
-          <QualificationCard key={l.version} lead={l} editable={sales && !closed} />
+          <QualificationCard key={l.version} lead={l} editable={sales && l.status !== "lost"} />
           <Card>
             <CardHeader title="Site surveys" description="A quote can only be built after a survey is approved." />
             {l.surveys.length === 0 ? <EmptyState title="No survey booked" description="Qualify the lead, then book a technician to measure the roof." /> : (

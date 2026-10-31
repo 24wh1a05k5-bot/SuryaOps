@@ -22,7 +22,7 @@ class JsonFormatter(logging.Formatter):
 def setup_logging() -> None:
     handler = logging.StreamHandler()
     handler.setFormatter(JsonFormatter())
-    logger = logging.getLogger("suryaops")
+    logger = logging.getLogger("rayora")
     logger.handlers = [handler]
     logger.setLevel(logging.INFO)
     logger.propagate = False
@@ -35,7 +35,7 @@ class RequestContextMiddleware(BaseHTTPMiddleware):
         response = await call_next(request)
         duration = round((time.perf_counter() - start) * 1000, 1)
         response.headers["x-request-id"] = request.state.request_id
-        logging.getLogger("suryaops").info(
+        logging.getLogger("rayora").info(
             "request",
             extra={"request_id": request.state.request_id, "path": request.url.path,
                    "method": request.method, "status": response.status_code, "duration_ms": duration},
