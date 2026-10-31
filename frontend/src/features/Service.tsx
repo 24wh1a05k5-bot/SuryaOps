@@ -22,8 +22,9 @@ const CHANNEL: Record<string, string> = { phone: "Phone", qr: "QR sticker", walk
 
 function Deadline({ t }: { t: any }) {
   if (["resolved", "closed"].includes(t.status)) return <span className="text-sm text-muted">Done {relative(t.resolved_at)}</span>;
-  const d = Math.round(t.days_left);
-  return <Badge tone={t.overdue ? "bad" : d <= 3 ? "warn" : "neutral"}><Clock className="h-3 w-3" />{t.overdue ? `${Math.abs(d)}d overdue` : `${d}d left`}</Badge>;
+  // Round away from zero so a ticket 0.3 days overdue reads "1d overdue", never "0d overdue" / "-0d left".
+  const d = Math.max(1, Math.ceil(Math.abs(Number(t.days_left) || 0)));
+  return <Badge tone={t.overdue ? "bad" : d <= 3 ? "warn" : "neutral"}><Clock className="h-3 w-3" />{t.overdue ? `${d}d overdue` : `${d}d left`}</Badge>;
 }
 
 function NewTicket({ onClose }: { onClose: () => void }) {
@@ -32,14 +33,17 @@ function NewTicket({ onClose }: { onClose: () => void }) {
   const [issue, setIssue] = useState("");
   const [channel, setChannel] = useState("phone");
   const dSerial = useDebounced(serial.trim(), 350);
+  // While the debounce is catching up, the shown match belongs to the previous serial.
+  const settled = serial.trim() === dSerial;
   const lookup = useQuery({ queryKey: ["unit-lookup", dSerial], queryFn: () => api("/stock/units", { query: { serial: dSerial, page_size: 5 } }), enabled: dSerial.length >= 4 });
-  const match = lookup.data?.items?.find((u: any) => u.serial_no.toUpperCase() === dSerial.toUpperCase()) ?? (lookup.data?.items?.length === 1 ? lookup.data.items[0] : null);
+  const found = lookup.data?.items?.find((u: any) => u.serial_no.toUpperCase() === dSerial.toUpperCase()) ?? (lookup.data?.items?.length === 1 ? lookup.data.items[0] : null);
+  const match = settled && dSerial.length >= 4 ? found : null;
   const create = useAction(() => api("/tickets", { body: { serial: match?.serial_no ?? serial, issue, channel } }),
     { success: "Ticket opened", invalidate: ["tickets"], onSuccess: (t: any) => nav(`/tickets/${t.id}`), silentError: true });
   const err = create.error as ApiError | null;
   return (
     <Dialog open onOpenChange={(o) => !o && onClose()} wide title="Log a breakdown" description="Search by the serial on the device. Warranty status is worked out automatically."
-      footer={<><Button onClick={onClose}>Cancel</Button><Button variant="primary" disabled={!match || issue.trim().length < 5} loading={create.isPending} onClick={() => create.mutate()}>Open ticket</Button></>}>
+      footer={<><Button onClick={onClose}>Cancel</Button><Button variant="primary" disabled={!match || lookup.isFetching || issue.trim().length < 5} loading={create.isPending} onClick={() => create.mutate()}>Open ticket</Button></>}>
       {err && <div className="mb-4"><Callout tone="bad" title="Couldn't open the ticket">{err.message}</Callout></div>}
       <div className="space-y-4">
         <Field label="Serial number"><div className="relative"><Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-faint" />
@@ -54,7 +58,7 @@ function NewTicket({ onClose }: { onClose: () => void }) {
             <Badge tone={match.in_warranty ? "ok" : "bad"}>{match.warranty_end ? (match.in_warranty ? `In warranty to ${date(match.warranty_end)}` : `Expired ${date(match.warranty_end)}`) : "No warranty"}</Badge>
           </div>
         )}
-        {dSerial.length >= 4 && !lookup.isFetching && !match && <p className="text-sm text-muted">No delivered unit matches that serial yet.</p>}
+        {settled && dSerial.length >= 4 && !lookup.isFetching && !match && <p className="text-sm text-muted">No delivered unit matches that serial yet.</p>}
         <Field label="How did it come in?"><Select value={channel} onChange={(e) => setChannel(e.target.value)}><option value="phone">Phone call</option><option value="walk_in">Walk-in</option></Select></Field>
         <Field label="What's wrong?"><Textarea value={issue} onChange={(e) => setIssue(e.target.value)} placeholder="No generation since the rain, inverter shows E-03" /></Field>
       </div>
@@ -100,23 +104,29 @@ export function TicketsList() {
 }
 
 function AddLine({ ticket, onClose }: { ticket: any; onClose: () => void }) {
-  const products = useQuery({ queryKey: ["products"], queryFn: () => api<any[]>("/products", { query: { active: true } }) });
+  const products = useQuery({ queryKey: ["products", { active: true }], queryFn: () => api<any[]>("/products", { query: { active: true } }) });
   const [labour, setLabour] = useState(false);
   const [f, setF] = useState({ product_id: "", replacement_serial: "", qty: "1", description: "" });
   const p = products.data?.find((x) => x.id === Number(f.product_id));
-  const add = useAction(() => api(`/tickets/${ticket.id}/lines`, { body: labour ? { is_labour: true, qty: Number(f.qty), description: f.description || "Labour" }
-    : { product_id: Number(f.product_id), qty: Number(f.qty), replacement_serial: f.replacement_serial || undefined, description: f.description || undefined } }),
+  const qty = Number(f.qty);
+  // Parts are whole pieces (step 1 from 1); labour is half-hours (step 0.5 from 0.5).
+  const step = labour ? 0.5 : 1;
+  const qtyOk = Number.isFinite(qty) && qty >= step && Number.isInteger(qty / step);
+  const valid = qtyOk && (labour || !!p);
+  const switchMode = (on: boolean) => { setLabour(on); setF((s) => ({ ...s, qty: "1" })); };
+  const add = useAction(() => api(`/tickets/${ticket.id}/lines`, { body: labour ? { is_labour: true, qty, description: f.description || "Labour" }
+    : { product_id: Number(f.product_id), qty, replacement_serial: f.replacement_serial.trim().toUpperCase() || undefined, description: f.description || undefined } }),
     { success: "Added to the ticket", invalidate: ["ticket"], onSuccess: onClose, silentError: true });
   return (
     <Dialog open onOpenChange={(o) => !o && onClose()} title="Add parts or labour" description={ticket.in_warranty ? "In warranty: the customer pays nothing, but the cost still counts against the job." : "Out of warranty: an invoice is raised automatically when the ticket is resolved."}
-      footer={<><Button onClick={onClose}>Cancel</Button><Button variant="primary" loading={add.isPending} onClick={() => add.mutate()}>Add</Button></>}>
+      footer={<><Button onClick={onClose}>Cancel</Button><Button variant="primary" disabled={!valid} loading={add.isPending} onClick={() => add.mutate()}>Add</Button></>}>
       {add.error && <div className="mb-4"><Callout tone="bad" title="Couldn't add that">{(add.error as ApiError).message}</Callout></div>}
       <div className="space-y-4">
-        <Toggle checked={labour} onChange={setLabour} label="Labour hours" description="Off to add a part from stock" />
+        <Toggle checked={labour} onChange={switchMode} label="Labour hours" description="Off to add a part from stock" />
         {!labour && <Field label="Part"><Select value={f.product_id} onChange={(e) => setF({ ...f, product_id: e.target.value })}><option value="">Choose a part</option>
           {products.data?.filter((x) => x.category !== "service").map((x) => <option key={x.id} value={x.id}>{x.name}</option>)}</Select></Field>}
         {!labour && p?.is_serialized && <Field label="Replacement serial" hint="The new unit gets its own warranty from today"><Input className="uppercase" value={f.replacement_serial} onChange={(e) => setF({ ...f, replacement_serial: e.target.value })} /></Field>}
-        <Field label={labour ? "Hours" : "Quantity"}><Input type="number" step={labour ? 0.5 : 1} min={0.5} value={f.qty} onChange={(e) => setF({ ...f, qty: e.target.value })} /></Field>
+        <Field label={labour ? "Hours" : "Quantity"}><Input type="number" step={step} min={step} value={f.qty} onChange={(e) => setF({ ...f, qty: e.target.value })} /></Field>
         <Field label="Description"><Input value={f.description} onChange={(e) => setF({ ...f, description: e.target.value })} placeholder={labour ? "Diagnosis and repair" : "Optional"} /></Field>
       </div>
     </Dialog>
@@ -139,6 +149,7 @@ export function TicketDetail() {
   if (q.error) return <EmptyState tone="bad" title="Couldn't open this ticket" description={(q.error as Error).message} />;
   const t = q.data;
   const active = ["assigned", "in_progress"].includes(t.status);
+  const done = ["resolved", "closed"].includes(t.status);
   const err = resolve.error as ApiError | null;
   return (
     <>
@@ -150,7 +161,7 @@ export function TicketDetail() {
           {t.status === "in_progress" && <Button variant="primary" loading={resolve.isPending} onClick={() => resolve.mutate()}><CheckCircle2 className="h-4 w-4" /> Resolve</Button>}
         </>} />
       <div className="mb-6"><StatusStepper stages={STAGES.ticket} current={t.status} /></div>
-      {err && <div className="mb-4"><Callout tone="bad" title="Not ready to resolve">{err.message}</Callout></div>}
+      {err && t.status === "in_progress" && <div className="mb-4"><Callout tone="bad" title="Not ready to resolve">{err.message}</Callout></div>}
       <div className="grid gap-6 xl:grid-cols-[1fr_340px]">
         <div className="space-y-6">
           {t.status === "resolved" && (
@@ -179,14 +190,14 @@ export function TicketDetail() {
                     <td className="num px-5 py-3 text-right text-lg font-semibold">{money(t.customer_total)}</td></tr>
                 </tbody>
               </table>
-            ) : <EmptyState title="Nothing recorded yet" description="Add the parts used and hours spent." />}
+            ) : <EmptyState title="Nothing recorded yet" description={done ? "No parts or labour were recorded for this repair." : "Add the parts used and hours spent."} />}
           </Card>
           <Card>
             <CardHeader title="After-repair photo" description="Geo-tagged proof of the fix is required before resolving" />
             <div className="p-5">
-              {active ? <PhotoCapture endpoint={`/tickets/${t.id}/photos`} existing={t.photos} onUploaded={() => q.refetch()} kinds={[{ value: "after_repair", label: "After repair" }]} />
+              {active ? <PhotoCapture endpoint={`/tickets/${t.id}/photos`} existing={t.photos} onUploaded={() => { resolve.reset?.(); q.refetch(); }} kinds={[{ value: "after_repair", label: "After repair" }]} />
                 : t.photos.length ? <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">{t.photos.map((p: any) => <img key={p.id} src={p.url} alt="After repair" className="aspect-[4/3] w-full rounded object-cover" />)}</div>
-                : <p className="text-sm text-muted">Assign and start the ticket to add photos.</p>}
+                : <p className="text-sm text-muted">{done ? "No photo was attached." : "Assign and start the ticket to add photos."}</p>}
             </div>
           </Card>
           <Card><CardHeader title="Activity" /><div className="px-5 py-4"><ActivityTimeline entity="ticket" id={t.id} /></div></Card>
@@ -194,11 +205,11 @@ export function TicketDetail() {
         <div className="space-y-6">
           <Card className="px-5 py-4">
             <h2 className="mb-3 font-semibold">Assignment</h2>
-            {can(user, "support") && !["resolved", "closed"].includes(t.status) ? (
+            {can(user, "support") && !done ? (
               <div className="space-y-3">
-                <Select value={t.assigned_to ?? ""} onChange={(e) => patch.mutate({ assigned_to: Number(e.target.value) })} aria-label="Technician">
+                <Select value={t.assigned_to ?? ""} onChange={(e) => e.target.value && patch.mutate({ assigned_to: Number(e.target.value) })} aria-label="Technician" disabled={patch.isPending}>
                   <option value="" disabled>Assign a technician</option>{techs.data?.map((x) => <option key={x.id} value={x.id}>{x.name}</option>)}</Select>
-                {t.status === "assigned" && <Button className="w-full justify-center" onClick={() => patch.mutate({ status: "in_progress" })}>Start work</Button>}
+                {t.status === "assigned" && <Button className="w-full justify-center" loading={patch.isPending} onClick={() => patch.mutate({ status: "in_progress" })}>Start work</Button>}
               </div>
             ) : <p>{t.technician?.name ?? "Not assigned"}</p>}
           </Card>
@@ -206,7 +217,7 @@ export function TicketDetail() {
             <Spec className="sm:grid-cols-1" items={[
               ["Customer", `${t.customer.name}, ${t.customer.phone}`],
               ["Unit", t.unit ? `${t.unit.serial_no}, ${t.unit.product.name}` : "—"],
-              ["Installed", date(t.unit?.delivered_at)], ["Warranty until", date(t.unit?.warranty_end)],
+              ["Installed", t.unit?.delivered_at ? date(t.unit.delivered_at) : "—"], ["Warranty until", t.unit?.warranty_end ? date(t.unit.warranty_end) : "—"],
               ["Due by", dateTime(t.due_by)],
               ["Invoice", t.invoice ? <button key="i" className="text-cell hover:underline" onClick={() => nav(`/invoices/${t.invoice.id}`)}>{t.invoice.number}, {money(t.invoice.total)}</button> : "None"],
             ]} />

@@ -170,6 +170,25 @@ function InstallFlow({ job }: { job: any }) {
   );
 }
 
+function warrantyTerm(months?: number | null) {
+  if (!months) return "—";
+  return months % 12 === 0 ? `${months / 12} ${months === 12 ? "Year" : "Years"}` : `${months} Months`;
+}
+
+/** Print only the certificate: copy it to the top of the page, print, then remove the copy. */
+function printCertificate() {
+  const src = document.querySelector(".cert-print");
+  if (!src) return window.print();
+  const root = document.createElement("div");
+  root.id = "cert-print-root";
+  root.appendChild(src.cloneNode(true));
+  document.body.appendChild(root);
+  document.body.classList.add("printing-cert");
+  const done = () => { document.body.classList.remove("printing-cert"); root.remove(); window.removeEventListener("afterprint", done); };
+  window.addEventListener("afterprint", done);
+  window.print();
+}
+
 function HandoverCertificateDialog({ job, onClose }: { job: any; onClose: () => void }) {
   const o = job.order;
   const c = o.customer;
@@ -178,9 +197,9 @@ function HandoverCertificateDialog({ job, onClose }: { job: any; onClose: () => 
       description={`Official proof of completion and warranty schedule for ${c.name} (${o.number})`}
       footer={<>
         <Button onClick={onClose}>Close</Button>
-        <Button variant="primary" onClick={() => window.print()}><Printer className="h-4 w-4" /> Print certificate</Button>
+        <Button variant="primary" onClick={printCertificate}><Printer className="h-4 w-4" /> Print certificate</Button>
       </>}>
-      <div className="rounded-lg border border-line bg-surface p-6 shadow-sm print:border-0 print:p-0">
+      <div className="cert-print rounded-lg border border-line bg-surface p-6 shadow-sm print:border-0 print:p-0">
         <div className="flex flex-col gap-2 border-b-2 border-sun pb-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <div className="flex items-center gap-2">
@@ -230,7 +249,8 @@ function HandoverCertificateDialog({ job, onClose }: { job: any; onClose: () => 
                     <td className="px-3 py-2 capitalize text-muted">{s.category}</td>
                     <td className="px-3 py-2 font-mono text-xs">{s.serial_no}</td>
                     <td className="px-3 py-2 text-right font-medium text-ink">
-                      {s.category === "panel" ? "20 Years" : "2 Years"}
+                      {warrantyTerm(s.warranty_months)}
+                      {s.warranty_end && <span className="block text-[11px] font-normal text-muted">until {date(s.warranty_end)}</span>}
                     </td>
                   </tr>
                 ))}

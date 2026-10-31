@@ -178,24 +178,24 @@ export function OrderDetail() {
     const rawPhone = o.customer.phone || "";
     const cleanDigits = rawPhone.replace(/\D/g, "");
     const formattedPhone = cleanDigits.length === 10 ? `91${cleanDigits}` : cleanDigits;
-    const payback = o.payback?.payback_years ? `${o.payback.payback_years} years` : "3-4 years";
-    const monthly = o.payback?.monthly_savings ? money(o.payback.monthly_savings) : "₹2,500";
-    const net = money(o.total - (o.expected_subsidy || 0));
-
-    const text = `*SunPower Solutions - Solar Installation Quote*
-Order: *${o.number}*
-Hello ${o.customer.name},
-
-Here is the customized quote for your *${o.kit.name}* rooftop solar system:
-
-• *Total Price:* ${money(o.total)}
-${o.is_subsidy ? `• *PM Surya Ghar Subsidy:* − ${money(o.expected_subsidy)}\n• *Net Cost:* ${net}\n` : ""}• *Estimated Payback:* ${payback}
-• *Est. Monthly Savings:* ${monthly}
-
-✅ All components, DCR panels, inverter, mounting stands & safety earthing included.
-
-View your complete parts breakdown & confirm your order here:
-${window.location.origin}/orders/${o.id}`;
+    const p = o.payback ?? {};
+    const lines = [
+      `*SunPower Solutions - Solar Installation Quote*`,
+      `Order: *${o.number}*`,
+      `Hello ${o.customer.name},`,
+      ``,
+      `Here is the quote for your *${o.kit.name}* rooftop solar system:`,
+      ``,
+      `• *Total Price:* ${money(o.total)}`,
+      ...(o.is_subsidy && o.expected_subsidy ? [`• *PM Surya Ghar Subsidy:* − ${money(o.expected_subsidy)}`, `• *Net Cost:* ${money(o.total - o.expected_subsidy)}`] : []),
+      ...(p.payback_years ? [`• *Estimated Payback:* ${p.payback_years} years`] : []),
+      ...(p.monthly_savings ? [`• *Est. Monthly Savings:* ${money(p.monthly_savings)}`] : []),
+      ``,
+      o.is_subsidy ? `✅ Government-approved DCR panels, inverter, mounting structure and earthing included.` : `✅ Panels, inverter, mounting structure and earthing included.`,
+      ``,
+      `Reply here and our team will share the full parts list and next steps.`,
+    ];
+    const text = lines.join("\n");
 
     const url = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(text)}`;
     window.open(url, "_blank");
