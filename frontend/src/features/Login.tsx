@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Field, Input } from "@/components/ui/form";
 import { BrandMark } from "@/components/shared/Brand";
 import { ThemeToggle } from "@/components/shared/ThemeToggle";
+import { LoginScene } from "@/components/shared/LoginScene";
 import type { ApiError } from "@/lib/api";
 
 const DEMO = [
@@ -36,24 +37,15 @@ export default function Login() {
   return (
     <div className="grid min-h-screen lg:grid-cols-[1fr_520px]">
       <section className="relative hidden overflow-hidden bg-side text-side-ink lg:flex lg:flex-col lg:justify-between lg:p-12">
-        <div className="flex items-center gap-3"><BrandMark className="h-9 w-9" /><span className="text-md font-semibold">SuryaOps</span></div>
-        <svg viewBox="0 0 600 340" className="absolute inset-x-0 bottom-28 w-full opacity-90" aria-hidden>
-          <path d="M40 300 A260 260 0 0 1 560 300" fill="none" stroke="rgb(var(--side-muted))" strokeOpacity=".35" strokeDasharray="3 7" />
-          <circle cx="430" cy="92" r="26" fill="rgb(var(--sun))" />
-          {Array.from({ length: 6 }).map((_, i) => (
-            <g key={i} transform={`translate(${70 + i * 82} 250) skewX(-18)`}>
-              <rect width="70" height="44" rx="3" fill="rgb(var(--cell))" opacity={0.55 + i * 0.07} />
-              <path d="M23 0v44M47 0v44M0 22h70" stroke="rgb(var(--side))" strokeOpacity=".55" />
-            </g>
-          ))}
-        </svg>
+        <LoginScene />
+        <div className="relative flex items-center gap-3"><BrandMark className="h-9 w-9" /><span className="text-md font-semibold">SuryaOps</span></div>
         <div className="relative max-w-md">
           <p className="text-2xl font-semibold leading-tight tracking-tight">From the first enquiry to year twenty of the warranty, in one place.</p>
           <p className="mt-3 text-base text-side-muted">Leads, surveys, kits, serial-tracked stock, installs, PM Surya Ghar paperwork, service and profit per job.</p>
         </div>
       </section>
       <section className="flex flex-col justify-center px-6 py-10 sm:px-12">
-        <div className="mx-auto w-full max-w-sm">
+        <div className="mx-auto w-full max-w-sm animate-pop">
           <div className="mb-8 flex items-center justify-between lg:hidden"><BrandMark /><ThemeToggle /></div>
           <h1 className="text-xl font-semibold">Sign in</h1>
           <p className="mt-1 text-muted">Use your SunPower Solutions work account.</p>
