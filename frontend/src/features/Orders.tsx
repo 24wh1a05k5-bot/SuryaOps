@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { BadgeCheck, Ban, Leaf, Plus, Printer, QrCode, Send, ShieldCheck, Trash2, Truck } from "lucide-react";
+import { BadgeCheck, Ban, Leaf, MessageCircle, Plus, Printer, QrCode, Send, ShieldCheck, Trash2, Truck } from "lucide-react";
+import { toast } from "sonner";
 import { api, ApiError } from "@/lib/api";
 import { can, useAuth } from "@/lib/auth";
 import { date, money, number, relative } from "@/lib/format";
@@ -173,6 +174,34 @@ export function OrderDetail() {
   const [dialog, setDialog] = useState<null | "edit" | "confirm" | "cancel" | "send">(null);
   const [reason, setReason] = useState("");
   const send = useAction(() => api(`/orders/${id}/send`, { body: {} }), { success: "Quote sent", invalidate: ["order", "orders"], onSuccess: () => setDialog(null) });
+  const shareWhatsApp = () => {
+    const rawPhone = o.customer.phone || "";
+    const cleanDigits = rawPhone.replace(/\D/g, "");
+    const formattedPhone = cleanDigits.length === 10 ? `91${cleanDigits}` : cleanDigits;
+    const payback = o.payback?.payback_years ? `${o.payback.payback_years} years` : "3-4 years";
+    const monthly = o.payback?.monthly_savings ? money(o.payback.monthly_savings) : "₹2,500";
+    const net = money(o.total - (o.expected_subsidy || 0));
+
+    const text = `*SunPower Solutions - Solar Installation Quote*
+Order: *${o.number}*
+Hello ${o.customer.name},
+
+Here is the customized quote for your *${o.kit.name}* rooftop solar system:
+
+• *Total Price:* ${money(o.total)}
+${o.is_subsidy ? `• *PM Surya Ghar Subsidy:* − ${money(o.expected_subsidy)}\n• *Net Cost:* ${net}\n` : ""}• *Estimated Payback:* ${payback}
+• *Est. Monthly Savings:* ${monthly}
+
+✅ All components, DCR panels, inverter, mounting stands & safety earthing included.
+
+View your complete parts breakdown & confirm your order here:
+${window.location.origin}/orders/${o.id}`;
+
+    const url = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(text)}`;
+    window.open(url, "_blank");
+    toast.success("Opening WhatsApp with quote details...");
+  };
+
   const cancel = useAction(() => api(`/orders/${id}/cancel`, { body: { reason } }), { success: "Order cancelled. Reservations released.", invalidate: ["order", "orders"], onSuccess: () => setDialog(null) });
   if (q.isLoading) return <div className="space-y-4"><Skeleton className="h-16 w-1/2" /><Skeleton className="h-80" /></div>;
   if (q.error) return <EmptyState tone="bad" title="Couldn't open this order" description={(q.error as Error).message} />;
@@ -188,6 +217,11 @@ export function OrderDetail() {
         actions={<>
           {editable && <Button onClick={() => setDialog("edit")}>Edit quote</Button>}
           {sales && o.status === "draft" && <Button loading={send.isPending} onClick={() => send.mutate()}><Send className="h-4 w-4" /> Send quote</Button>}
+          {["draft", "sent", "confirmed"].includes(o.status) && (
+            <Button variant="secondary" onClick={shareWhatsApp}>
+              <MessageCircle className="h-4 w-4 text-[#25D366]" /> Share on WhatsApp
+            </Button>
+          )}
           {editable && <Button variant="primary" onClick={() => setDialog("confirm")}><BadgeCheck className="h-4 w-4" /> Confirm order</Button>}
           {o.units.some((u: any) => u.qr_token) && <Button onClick={() => nav(`/orders/${o.id}/qr`)}><QrCode className="h-4 w-4" /> QR stickers</Button>}
           {o.pick_list && can(user, "warehouse") && o.status === "confirmed" && <Button variant="primary" onClick={() => nav(`/dispatch/${o.pick_list.id}`)}><Truck className="h-4 w-4" /> Open pick list</Button>}

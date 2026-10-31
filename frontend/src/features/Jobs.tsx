@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { CalendarClock, Check, CheckCircle2, CircleDot, Play, Save, ShieldAlert, Truck } from "lucide-react";
+import { CalendarClock, Check, CheckCircle2, CircleDot, Play, Printer, Save, ShieldAlert, Truck } from "lucide-react";
 import { api, ApiError } from "@/lib/api";
 import { can, useAuth } from "@/lib/auth";
 import { date, dateTime, time, toLocalInput } from "@/lib/format";
@@ -170,12 +170,124 @@ function InstallFlow({ job }: { job: any }) {
   );
 }
 
+function HandoverCertificateDialog({ job, onClose }: { job: any; onClose: () => void }) {
+  const o = job.order;
+  const c = o.customer;
+  return (
+    <Dialog open onOpenChange={(v) => !v && onClose()} wide title="Commissioning & Handover Certificate"
+      description={`Official proof of completion and warranty schedule for ${c.name} (${o.number})`}
+      footer={<>
+        <Button onClick={onClose}>Close</Button>
+        <Button variant="primary" onClick={() => window.print()}><Printer className="h-4 w-4" /> Print certificate</Button>
+      </>}>
+      <div className="rounded-lg border border-line bg-surface p-6 shadow-sm print:border-0 print:p-0">
+        <div className="flex flex-col gap-2 border-b-2 border-sun pb-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-xl font-bold tracking-tight text-ink">SunPower Solutions</span>
+              <Badge tone="ok" dot={false}>Commissioned</Badge>
+            </div>
+            <p className="text-xs text-muted">Rooftop Solar EPC • PM Surya Ghar Approved Installer</p>
+          </div>
+          <div className="sm:text-right">
+            <p className="text-xs font-semibold uppercase tracking-wider text-muted">Certificate Ref</p>
+            <p className="font-mono text-sm font-bold text-ink">CERT-JOB-{job.id}</p>
+            <p className="text-xs text-muted">Handover: {dateTime(job.accepted_at)}</p>
+          </div>
+        </div>
+
+        <div className="mt-4 grid gap-3 rounded-md bg-sunken/40 p-4 sm:grid-cols-2 text-sm">
+          <div>
+            <p className="text-xs font-medium text-muted">Customer & Site Details</p>
+            <p className="font-semibold text-ink">{c.name}</p>
+            <p className="text-muted">{c.address}, {c.city}</p>
+            <p className="text-muted">Contact: {c.phone}</p>
+          </div>
+          <div>
+            <p className="text-xs font-medium text-muted">System Specification</p>
+            <p className="font-semibold text-ink">{o.kit.name} ({job.installed_kw ?? o.capacity_kw} kW)</p>
+            <p className="text-muted">Order Ref: {o.number} {o.is_subsidy ? `(PM Surya Ghar - ${o.sanctioned_kw} kW)` : ""}</p>
+            <p className="text-muted">Commissioned by: {job.technician?.name ?? "Field Installation Crew"}</p>
+          </div>
+        </div>
+
+        <div className="mt-5">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted">Installed Equipment & Warranty Schedule</p>
+          <div className="overflow-x-auto rounded border border-line">
+            <table className="w-full text-left text-sm">
+              <thead className="border-b border-line bg-sunken/50 text-xs font-medium text-muted">
+                <tr>
+                  <th className="px-3 py-2">Item / Model</th>
+                  <th className="px-3 py-2">Category</th>
+                  <th className="px-3 py-2">Serial Number</th>
+                  <th className="px-3 py-2 text-right">Warranty Term</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-line">
+                {job.serials.map((s: any) => (
+                  <tr key={s.serial_no}>
+                    <td className="px-3 py-2 font-medium text-ink">{s.product}</td>
+                    <td className="px-3 py-2 capitalize text-muted">{s.category}</td>
+                    <td className="px-3 py-2 font-mono text-xs">{s.serial_no}</td>
+                    <td className="px-3 py-2 text-right font-medium text-ink">
+                      {s.category === "panel" ? "20 Years" : "2 Years"}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {job.photos.length > 0 && (
+          <div className="mt-5">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted">Verification Photos (Rooftop & Inverter)</p>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+              {job.photos.slice(0, 4).map((p: any) => (
+                <div key={p.id} className="overflow-hidden rounded border border-line bg-sunken">
+                  <img src={p.url} alt={p.kind} className="aspect-[4/3] w-full object-cover" />
+                  <p className="truncate px-1.5 py-1 text-center text-[11px] capitalize text-muted">{p.kind.replace("_", " ")}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <div className="mt-5 rounded-md border border-line bg-sunken/20 p-3 text-xs text-muted">
+          <p className="font-medium text-ink">Handover & Testing Declaration:</p>
+          <p className="mt-0.5">
+            The rooftop solar photovoltaic system detailed above has been mounted, safety-earthed, grid/load tested, and confirmed generating active clean power.
+            Workmanship and equipment comply with standard DISCOM technical specifications.
+          </p>
+        </div>
+
+        <div className="mt-5 grid grid-cols-2 items-end gap-6 pt-2">
+          <div className="border-t border-line pt-2">
+            <p className="text-xs font-medium text-muted">Installation Engineer</p>
+            <p className="mt-1 font-semibold text-ink">{job.technician?.name ?? "Field Engineer"}</p>
+            <p className="text-[11px] text-muted">SunPower Solutions Technical Crew</p>
+          </div>
+          <div className="border-t border-line pt-2 text-right">
+            <p className="text-xs font-medium text-muted">Customer Sign-off & Acceptance</p>
+            {job.signature_url ? (
+              <img src={job.signature_url} alt="Customer signature" className="ml-auto my-1 h-12 border border-line rounded bg-white object-contain px-2" />
+            ) : null}
+            <p className="font-semibold text-ink">{job.signed_by_name || c.name}</p>
+            <p className="text-[11px] text-muted">Accepted on {dateTime(job.accepted_at)}</p>
+          </div>
+        </div>
+      </div>
+    </Dialog>
+  );
+}
+
 export function JobDetail() {
   const { id } = useParams();
   const nav = useNavigate();
   const { user } = useAuth();
   const q = useQuery({ queryKey: ["job", id], queryFn: () => api(`/jobs/${id}`) });
   const [scheduling, setScheduling] = useState(false);
+  const [certificate, setCertificate] = useState(false);
   const start = useAction(() => api(`/jobs/${id}/start`, { body: {} }), { success: "Job started", invalidate: ["job", "jobs"], silentError: true });
   if (q.isLoading) return <Skeleton className="h-96" />;
   if (q.error) return <EmptyState tone="bad" title="Couldn't open this job" description={(q.error as Error).message} />;
@@ -193,6 +305,11 @@ export function JobDetail() {
         actions={<>
           {can(user, "sales") && ["unscheduled", "scheduled"].includes(j.status) && <Button onClick={() => setScheduling(true)}><CalendarClock className="h-4 w-4" /> {j.status === "unscheduled" ? "Schedule" : "Reschedule"}</Button>}
           {tech && j.status === "scheduled" && <Button variant="primary" size="lg" loading={start.isPending} onClick={() => start.mutate()}><Play className="h-4 w-4" /> Start job</Button>}
+          {j.status === "customer_accepted" && (
+            <Button variant="primary" onClick={() => setCertificate(true)}>
+              <Printer className="h-4 w-4" /> Handover certificate
+            </Button>
+          )}
           <Button variant="ghost" onClick={() => nav(`/orders/${o.id}`)}>View order</Button>
         </>} />
       <div className="mb-6"><StatusStepper stages={STAGES.job} current={j.status} terminal={{ status: "cancelled", label: "Cancelled" }} /></div>
@@ -228,6 +345,7 @@ export function JobDetail() {
         </Card>
       </div>
       {scheduling && <ScheduleDialog job={j} onClose={() => setScheduling(false)} />}
+      {certificate && <HandoverCertificateDialog job={j} onClose={() => setCertificate(false)} />}
     </>
   );
 }
