@@ -1,10 +1,11 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
 import {
-  BadgeIndianRupee, Boxes, ClipboardCheck, FileText, Gauge, HardHat, LifeBuoy, LogOut, Menu as MenuIcon, PackageCheck,
+  BadgeIndianRupee, Boxes, ClipboardCheck, FileText, Gauge, HardHat, LifeBuoy, LogOut, Menu as MenuIcon, PackageCheck, RotateCcw,
   Search, Settings, ShieldCheck, ShoppingCart, Truck, UserRound, Users, WifiOff, X,
 } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { ROLE_LABEL, can, useAuth, type Role } from "@/lib/auth";
 import { api } from "@/lib/api";
 import { useOnline } from "@/lib/hooks";
@@ -13,6 +14,7 @@ import { BrandMark, BrandName } from "./Brand";
 import { CommandPalette } from "./CommandPalette";
 import { ThemeToggle } from "./ThemeToggle";
 import { ErrorBoundary } from "./ErrorBoundary";
+import { ConfirmDialog } from "../ui/dialog";
 import { Menu, MenuContent, MenuItem, MenuLabel, MenuSeparator, MenuTrigger } from "../ui/menu";
 
 type Item = { to: string; label: string; icon: typeof Gauge; roles: Role[] };
@@ -122,7 +124,8 @@ export function AppShell({ children }: { children?: ReactNode }) {
             <span className="flex-1 truncate">Find a customer, serial, order or ticket</span>
             <kbd className="hidden rounded border border-line px-1.5 text-xs sm:inline">Ctrl K</kbd>
           </button>
-          <div className="ml-auto">
+          <div className="ml-auto flex items-center gap-2">
+            {user?.role === "admin" && <ResetDemoButton />}
             <Menu>
               <MenuTrigger asChild>
                 <button className="flex items-center gap-2.5 rounded py-1 pl-1 pr-2 hover:bg-sunken" aria-label="Account menu">
@@ -152,5 +155,36 @@ export function AppShell({ children }: { children?: ReactNode }) {
       </div>
       <CommandPalette open={palette} onOpenChange={setPalette} />
     </div>
+  );
+}
+
+/** Director only: puts the demo data back to its starting state (same as `seed --reset`). */
+function ResetDemoButton() {
+  const qc = useQueryClient();
+  const [open, setOpen] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const reset = async () => {
+    setBusy(true);
+    try {
+      await api("/admin/reset-demo", { body: {} });
+      qc.clear();
+      toast.success("Demo data reset");
+      window.location.assign("/dashboard");
+    } catch (e) {
+      toast.error((e as Error).message);
+      setBusy(false);
+      setOpen(false);
+    }
+  };
+  return (
+    <>
+      <button onClick={() => setOpen(true)} title="Reset demo data"
+        className="flex h-8 items-center gap-1.5 rounded border border-line px-2.5 text-sm text-muted hover:border-line-strong hover:bg-sunken hover:text-ink">
+        <RotateCcw className="h-3.5 w-3.5" /><span className="hidden sm:inline">Reset demo</span>
+      </button>
+      <ConfirmDialog open={open} onOpenChange={(o) => !busy && setOpen(o)} title="Reset demo data?"
+        description="Everything goes back to the starting demo: new leads, orders, payments and tickets are removed. Takes about 10 seconds."
+        confirmLabel="Reset" danger loading={busy} onConfirm={reset} />
+    </>
   );
 }

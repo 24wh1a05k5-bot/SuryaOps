@@ -1,4 +1,9 @@
-"""Auth, users, settings, activity timeline, global search, health."""
+"""Auth, users, settings, activity timeline, global search, health, demo reset."""
+import subprocess
+import sys
+import threading
+from pathlib import Path
+
 from fastapi import APIRouter, Depends, Query, Request
 from sqlalchemy import select, text
 from sqlalchemy.orm import Session
@@ -73,6 +78,34 @@ def activity(entity: str, entity_id: int, db: Session = Depends(get_db), _: User
 def global_search(q: str = Query(min_length=1, max_length=80), db: Session = Depends(get_db),
                   _: User = Depends(get_current_user)):
     return search(db, q)
+
+
+_reset_lock = threading.Lock()
+BACKEND_DIR = Path(__file__).resolve().parents[2]
+
+
+@router.post("/admin/reset-demo")
+def reset_demo(db: Session = Depends(get_db), _: User = Depends(require_roles())):
+    """Director only: rebuild the demo data, exactly like `python -m app.seed.seed --reset`.
+    Runs as a separate process because the seed script moves the clock back in time while it works."""
+    if not _reset_lock.acquire(blocking=False):
+        raise AppError("RESET_IN_PROGRESS", "A reset is already running. Give it a few seconds.", 409)
+    try:
+        from app.core.db import engine
+        from app.services import reports
+        db.rollback()      # end this request's own transaction: it holds a lock on the users table
+        db.close()
+        engine.dispose()  # release pooled connections so the tables can be dropped
+        r = subprocess.run([sys.executable, "-m", "app.seed.seed", "--reset"], cwd=BACKEND_DIR,
+                           capture_output=True, text=True, timeout=240)
+        engine.dispose()  # fresh connections: old ones remember the dropped tables
+        reports._cache.clear()
+        if r.returncode != 0:
+            raise AppError("RESET_FAILED", "The demo data couldn't be rebuilt. Check the server logs.", 500,
+                           {"output": (r.stderr or r.stdout)[-800:]})
+        return {"ok": True, "message": "Demo data has been reset."}
+    finally:
+        _reset_lock.release()
 
 
 @router.get("/health")
