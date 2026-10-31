@@ -83,6 +83,8 @@ def get_order(order_id: int, db: Session = Depends(get_db), _: User = Depends(RE
     data["subsidy_case"] = {"id": case.id, "stage": case.stage, "application_no": case.application_no} if case else None
     units = db.execute(select(StockUnit).where(StockUnit.order_id == o.id).order_by(StockUnit.id)).scalars().all()
     data["units"] = [unit_out(u) for u in units]
+    from app.services.tracking import make_code
+    data["tracking_code"] = make_code(o.id)
     data["payback"] = sales.payback(db, o)
     return data
 

@@ -20,18 +20,21 @@ import { Field, Input, Select, Textarea } from "@/components/ui/form";
 
 /* ---------------- Purchases ---------------- */
 
-function NewPurchase({ onClose }: { onClose: () => void }) {
+type PurchaseDraft = { supplier: string; lines: { product_id: string; qty: string; unit_cost: string }[] };
+
+function NewPurchase({ onClose, initial }: { onClose: () => void; initial?: PurchaseDraft }) {
   const nav = useNavigate();
   const suppliers = useQuery({ queryKey: ["suppliers"], queryFn: () => api<any[]>("/suppliers") });
   const products = useQuery({ queryKey: ["products"], queryFn: () => api<any[]>("/products", { query: { active: true } }) });
   const stockable = (products.data ?? []).filter((p) => p.category !== "service");
-  const [supplier, setSupplier] = useState("");
-  const [lines, setLines] = useState<{ product_id: string; qty: string; unit_cost: string }[]>([{ product_id: "", qty: "1", unit_cost: "" }]);
+  const [supplier, setSupplier] = useState(initial?.supplier ?? "");
+  const [lines, setLines] = useState<{ product_id: string; qty: string; unit_cost: string }[]>(initial?.lines ?? [{ product_id: "", qty: "1", unit_cost: "" }]);
   const create = useAction(() => api("/purchases", { body: { supplier_id: Number(supplier), lines: lines.map((l) => ({ product_id: Number(l.product_id), qty: Number(l.qty), unit_cost: Number(l.unit_cost) })) } }),
     { success: "Purchase created", invalidate: ["purchases"], onSuccess: (p: any) => nav(`/purchases/${p.id}`) });
   const total = lines.reduce((s, l) => s + Number(l.qty || 0) * Number(l.unit_cost || 0), 0);
   return (
-    <Dialog open onOpenChange={(o) => !o && onClose()} wide title="New purchase" description="Stock you're buying from a supplier. Serial numbers are entered when the goods arrive."
+    <Dialog open onOpenChange={(o) => !o && onClose()} wide title={initial ? "Reorder low stock" : "New purchase"}
+      description={initial ? "Pre-filled to bring each item back to twice its reorder level. Change anything before creating." : "Stock you're buying from a supplier. Serial numbers are entered when the goods arrive."}
       footer={<><span className="num mr-auto self-center font-semibold">{money(total)}</span><Button onClick={onClose}>Cancel</Button>
         <Button variant="primary" disabled={!supplier || lines.some((l) => !l.product_id)} loading={create.isPending} onClick={() => create.mutate()}>Create purchase</Button></>}>
       <Field label="Supplier"><Select value={supplier} onChange={(e) => setSupplier(e.target.value)}><option value="">Choose a supplier</option>
@@ -128,6 +131,51 @@ export function PurchaseDetail() {
 
 /* ---------------- Stock ---------------- */
 
+/** Like Odoo's Replenishment: items below reorder level, grouped by the supplier we last bought them from. */
+function ReorderCard({ low }: { low: any[] }) {
+  const { user } = useAuth();
+  const suppliers = useQuery({ queryKey: ["suppliers"], queryFn: () => api<any[]>("/suppliers") });
+  const [draft, setDraft] = useState<PurchaseDraft | null>(null);
+  const groups = new Map<string, any[]>();
+  low.forEach((r) => { const k = String(r.last_supplier_id ?? ""); groups.set(k, [...(groups.get(k) ?? []), r]); });
+  const nameOf = (id: string) => suppliers.data?.find((s) => String(s.id) === id)?.name ?? "Choose supplier";
+  const open = (sid: string, rows: any[]) => setDraft({ supplier: sid,
+    lines: rows.map((r) => ({ product_id: String(r.product_id), qty: String(r.suggested_qty), unit_cost: String(r.cost_price) })) });
+  const canBuy = can(user, "warehouse");
+  return (
+    <Card className="mb-6 overflow-hidden">
+      <CardHeader title={`Running low: ${low.length} item${low.length > 1 ? "s" : ""} below reorder level`}
+        description="Suggested quantity brings each item back to twice its reorder level, so confirmed orders never wait for stock." />
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-[560px] text-base">
+          <thead><tr className="border-b border-line text-left text-sm text-muted">
+            <th className="px-5 py-2 font-medium">Product</th><th className="px-3 py-2 text-right font-medium">Available</th>
+            <th className="px-3 py-2 text-right font-medium">Reorder at</th><th className="px-3 py-2 text-right font-medium">Suggested</th>
+            <th className="px-5 py-2 font-medium">Usual supplier</th></tr></thead>
+          <tbody>{low.map((r) => (
+            <tr key={r.product_id} className="border-b border-line last:border-0">
+              <td className="px-5 py-2 font-medium">{r.name}</td>
+              <td className="num px-3 py-2 text-right font-semibold text-[rgb(var(--warn))]">{number(r.available)}</td>
+              <td className="num px-3 py-2 text-right text-muted">{number(r.reorder_level)}</td>
+              <td className="num px-3 py-2 text-right font-semibold">{number(r.suggested_qty)}</td>
+              <td className="px-5 py-2 text-muted">{r.last_supplier_id ? nameOf(String(r.last_supplier_id)) : "—"}</td>
+            </tr>))}</tbody>
+        </table>
+      </div>
+      {canBuy && (
+        <div className="flex flex-wrap gap-2 border-t border-line bg-sunken/40 px-5 py-3">
+          {[...groups.entries()].map(([sid, rows]) => (
+            <Button key={sid || "none"} variant="primary" onClick={() => open(sid, rows)}>
+              <PackagePlus className="h-4 w-4" /> Reorder from {sid ? nameOf(sid) : "a supplier"} ({rows.length})
+            </Button>
+          ))}
+        </div>
+      )}
+      {draft && <NewPurchase initial={draft} onClose={() => setDraft(null)} />}
+    </Card>
+  );
+}
+
 export function Stock() {
   const [params, setParams] = useSearchParams();
   const [serial, setSerial] = useState(params.get("serial") ?? "");
@@ -141,7 +189,7 @@ export function Stock() {
   return (
     <>
       <PageHeader title="Stock and serials" description={`Stock on hand is worth ${money(value)}. Every inverter, battery, charge controller and panel is tracked by serial number.`} />
-      {low.length > 0 && <div className="mb-4"><Callout tone="warn" title={`${low.length} item${low.length > 1 ? "s" : ""} below reorder level`}>{low.map((r) => `${r.name} (${r.available} left)`).join(", ")}</Callout></div>}
+      {low.length > 0 && <ReorderCard low={low} />}
       <DataTable dense rowKey={(r: any) => r.product_id} rows={summary.data} loading={summary.isLoading} error={summary.error}
         rowClassName={(r: any) => (r.low_stock ? "bg-warn-soft/50" : undefined)}
         columns={[

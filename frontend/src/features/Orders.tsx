@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { BadgeCheck, Ban, Leaf, MessageCircle, Plus, Printer, QrCode, Send, ShieldCheck, Trash2, Truck } from "lucide-react";
+import { BadgeCheck, Ban, ExternalLink, Leaf, MessageCircle, Plus, Printer, QrCode, Send, ShieldCheck, Trash2, Truck } from "lucide-react";
 import { toast } from "sonner";
 import { api, ApiError } from "@/lib/api";
 import { can, useAuth } from "@/lib/auth";
@@ -193,7 +193,9 @@ export function OrderDetail() {
       ``,
       o.is_subsidy ? `✅ Government-approved DCR panels, inverter, mounting structure and earthing included.` : `✅ Panels, inverter, mounting structure and earthing included.`,
       ``,
-      `Reply here and our team will share the full parts list and next steps.`,
+      ...(o.status === "confirmed" || o.status === "dispatched" || o.status === "delivered" || o.status === "installed" || o.status === "completed"
+        ? [`Track your order live: ${window.location.origin}/track/${o.tracking_code}`]
+        : [`Reply here and our team will share the full parts list and next steps.`]),
     ];
     const text = lines.join("\n");
 
@@ -217,10 +219,13 @@ export function OrderDetail() {
         actions={<>
           {editable && <Button onClick={() => setDialog("edit")}>Edit quote</Button>}
           {sales && o.status === "draft" && <Button loading={send.isPending} onClick={() => send.mutate()}><Send className="h-4 w-4" /> Send quote</Button>}
-          {["draft", "sent", "confirmed"].includes(o.status) && (
+          {o.status !== "cancelled" && (
             <Button variant="secondary" onClick={shareWhatsApp}>
               <MessageCircle className="h-4 w-4 text-[#25D366]" /> Share on WhatsApp
             </Button>
+          )}
+          {!["draft", "sent", "cancelled"].includes(o.status) && o.tracking_code && (
+            <Button variant="ghost" onClick={() => window.open(`/track/${o.tracking_code}`, "_blank")}><ExternalLink className="h-4 w-4" /> Customer tracking page</Button>
           )}
           {editable && <Button variant="primary" onClick={() => setDialog("confirm")}><BadgeCheck className="h-4 w-4" /> Confirm order</Button>}
           {o.units.some((u: any) => u.qr_token) && <Button onClick={() => nav(`/orders/${o.id}/qr`)}><QrCode className="h-4 w-4" /> QR stickers</Button>}

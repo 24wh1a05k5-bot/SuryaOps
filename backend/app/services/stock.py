@@ -101,6 +101,11 @@ def stock_summary(db: Session) -> list[dict]:
                              .group_by(StockUnit.product_id)).all())
     reserved = dict(db.execute(select(StockUnit.product_id, func.count()).where(StockUnit.status == "reserved")
                                .group_by(StockUnit.product_id)).all())
+    # Supplier last used for each product, so a reorder can be pre-filled
+    last_supplier = {}
+    for pid, sid in db.execute(select(PurchaseLine.product_id, Purchase.supplier_id).join(Purchase)
+                               .order_by(Purchase.created_at)).all():
+        last_supplier[pid] = sid
     rows = []
     for p in db.execute(select(Product).where(Product.category != "service").order_by(Product.category,
                                                                                       Product.name)).scalars():
@@ -113,6 +118,8 @@ def stock_summary(db: Session) -> list[dict]:
                      "is_serialized": p.is_serialized, "is_dcr": p.is_dcr, "on_hand": on_hand, "reserved": res,
                      "available": available, "reorder_level": p.reorder_level,
                      "low_stock": available < p.reorder_level, "cost_price": float(p.cost_price),
+                     "suggested_qty": max(p.reorder_level * 2 - available, 1) if available < p.reorder_level else 0,
+                     "last_supplier_id": last_supplier.get(p.id),
                      "stock_value": float(p.cost_price) * on_hand})
     return rows
 

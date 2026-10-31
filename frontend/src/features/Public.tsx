@@ -1,7 +1,7 @@
 import { useState, type ReactNode } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { CheckCircle2, ShieldCheck, ShieldX, Sun } from "lucide-react";
+import { CheckCircle2, Circle, Clock3, ShieldCheck, ShieldX, Sun } from "lucide-react";
 import { api, ApiError } from "@/lib/api";
 import { date, dateTime } from "@/lib/format";
 import { useAction } from "@/lib/hooks";
@@ -109,6 +109,52 @@ export function UnitPage() {
           </>
         )}
       </Card>
+    </PublicFrame>
+  );
+}
+
+/** Customer order tracking: like a delivery app, no login. The link is signed so it can't be guessed. */
+export function TrackPage() {
+  const { code } = useParams();
+  const q = useQuery({ queryKey: ["public-track", code], queryFn: () => api(`/public/track/${code}`), refetchInterval: 60000 });
+  if (q.isLoading) return <PublicFrame><Skeleton className="h-96" /></PublicFrame>;
+  if (q.error) return <PublicFrame><EmptyState tone="bad" title="We couldn't find this order" description={(q.error as Error).message} /></PublicFrame>;
+  const t = q.data as any;
+  const current = t.steps.find((s: any) => s.key === t.current);
+  const doneCount = t.steps.filter((s: any) => s.done).length;
+  return (
+    <PublicFrame company={t.company}>
+      <p className="text-sm text-muted">Order {t.order} for {t.owner}{t.city ? `, ${t.city}` : ""}</p>
+      <h1 className="mt-1 text-xl font-semibold">Your {t.system} solar system</h1>
+      <div className={`mt-5 rounded-lg p-5 ring-1 ring-inset ${t.complete ? "bg-ok-soft ring-ok/25" : "bg-sun-soft/50 ring-sun/30"}`}>
+        <p className="text-sm font-medium text-muted">{t.complete ? "All done" : "Happening now"}</p>
+        <p className="mt-0.5 text-lg font-semibold">{t.complete ? "Your system is live and your subsidy has been credited." : current?.label}</p>
+        <div className="mt-3 h-2 overflow-hidden rounded-full bg-surface"><div className="h-full rounded-full bg-sun transition-all" style={{ width: `${(doneCount / t.steps.length) * 100}%` }} /></div>
+        <p className="num mt-1.5 text-sm text-muted">{doneCount} of {t.steps.length} steps complete</p>
+      </div>
+      <Card className="mt-6 p-5">
+        <ol className="relative">
+          {t.steps.map((s: any, i: number) => {
+            const isCurrent = s.key === t.current;
+            const last = i === t.steps.length - 1;
+            return (
+              <li key={s.key} className="relative flex gap-3 pb-5 last:pb-0">
+                {!last && <span className={`absolute left-[11px] top-6 h-[calc(100%-16px)] w-0.5 ${s.done ? "bg-ok" : "bg-line"}`} />}
+                <span className="relative z-10 mt-0.5 shrink-0">
+                  {s.done ? <CheckCircle2 className="h-6 w-6 text-ok" /> : isCurrent ? <Clock3 className="h-6 w-6 text-[rgb(var(--warn))]" /> : <Circle className="h-6 w-6 text-faint" />}
+                </span>
+                <div className="min-w-0">
+                  <p className={`font-medium ${s.done || isCurrent ? "text-ink" : "text-faint"}`}>{s.label}</p>
+                  {s.at && <p className="text-sm text-muted">{s.key === "scheduled" && !s.done ? "" : dateTime(s.at)}</p>}
+                  {isCurrent && !s.at && <p className="text-sm text-muted">In progress. We'll update this page as soon as it's done.</p>}
+                  {s.note && (s.done || isCurrent) && <p className="mt-0.5 text-sm text-muted">{s.note}</p>}
+                </div>
+              </li>
+            );
+          })}
+        </ol>
+      </Card>
+      <p className="mt-4 text-center text-sm text-faint">This page updates automatically. Questions? Reply to our WhatsApp message.</p>
     </PublicFrame>
   );
 }

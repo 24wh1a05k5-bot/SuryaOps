@@ -30,6 +30,7 @@ const TechPay = lazy(() => import("@/features/Finance").then((m) => ({ default: 
 const Settings = lazy(() => import("@/features/Finance").then((m) => ({ default: m.Settings })));
 const Enquiry = lazy(() => import("@/features/Public").then((m) => ({ default: m.EnquiryForm })));
 const UnitPage = lazy(() => import("@/features/Public").then((m) => ({ default: m.UnitPage })));
+const TrackPage = lazy(() => import("@/features/Public").then((m) => ({ default: m.TrackPage })));
 const Shared = lazy(() => import("@/features/Public").then((m) => ({ default: m.SharedReport })));
 const PrintReport = lazy(() => import("@/features/Public").then((m) => ({ default: m.PrintReport })));
 
@@ -62,6 +63,7 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/enquiry" element={<Enquiry />} />
         <Route path="/u/:token" element={<UnitPage />} />
+        <Route path="/track/:code" element={<TrackPage />} />
         <Route path="/shared/:token" element={<Shared />} />
         <Route path="/reports/print" element={<Protected roles={["accounts"]}><PrintReport /></Protected>} />
         <Route path="/" element={<Protected><Home /></Protected>} />

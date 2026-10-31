@@ -253,6 +253,13 @@ def unit_qr(token: str, db: Session = Depends(get_db)):
     return StreamingResponse(buf, media_type="image/png", headers={"Cache-Control": "public, max-age=86400"})
 
 
+@public.get("/track/{code}")
+@limiter.limit("30/minute")
+def track(request: Request, code: str, db: Session = Depends(get_db)):
+    from app.services.tracking import public_track
+    return public_track(db, code)
+
+
 @public.get("/shared/{token}")
 @limiter.limit("30/minute")
 def shared(request: Request, token: str, db: Session = Depends(get_db)):
