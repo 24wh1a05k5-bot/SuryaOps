@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Navigate, useLocation, useNavigate } from "react-router-dom";
+import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { HOME_FOR, useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { Field, Input } from "@/components/ui/form";
@@ -71,6 +71,10 @@ export default function Login() {
                 <button key={mail} type="button" onClick={() => { setEmail(mail); setPassword("demo1234"); }}
                   className={`h-7 rounded px-2.5 text-sm ${email === mail ? "bg-ink text-bg" : "bg-sunken text-muted hover:text-ink"}`}>{role}</button>
               ))}
+              {/* Customers don't log in: this opens the public website they see */}
+              <Link to="/" title="Opens the customer website (no login needed)"
+                className="inline-flex h-7 items-center rounded border border-sun/40 bg-sun-soft px-2.5 text-sm font-medium text-[rgb(var(--sun-strong))] hover:border-sun">
+                Customer ↗</Link>
             </div>
           </div>
           <div className="mt-6"><ThemeToggle /></div>
