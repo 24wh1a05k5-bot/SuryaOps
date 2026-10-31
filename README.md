@@ -1,6 +1,6 @@
 # SuryaOps
 
-**Rooftop solar operations platform**, built for the Odoo Hackathon final (Solar Installation Management System).
+**Rooftop solar operations platform**, (Solar Installation Management System).
 
 One system that takes a solar customer from first enquiry to a 20-year warranty: **subsidy-ready by design**, with **serial-level traceability** and **profit on every job**. Light and dark themes included.
 
@@ -131,24 +131,6 @@ Public pages (no login): `/enquiry` (web form), `/u/legacy-demo-unit-0007` (QR p
 - **Scale:** server-side pagination, filtering and search; indexes on hot paths; SQL aggregates with a 60-second dashboard cache that clears on writes; connection pool; GZip; route-level code splitting.
 - **Resilience:** one error format with request IDs; JSON logs; health check; "connection lost" banner with auto-retry; GET retries with backoff; per-page error boundaries; install drafts saved on the device; per-photo upload retry; client-side image compression.
 - **Security:** bcrypt, JWT, role checks on every route (technicians only see their own work), rate limits on login and public endpoints, public pages show minimal masked data, share links expire and can be revoked.
-
----
-
-## Odoo mapping
-
-| SuryaOps | Odoo |
-|---|---|
-| Leads and qualification | CRM |
-| Kit templates to order lines | Sales + product kits / BoM |
-| Purchases with serial receipt | Purchase + Inventory lot/serial tracking |
-| Pick list and dispatch | Inventory delivery orders |
-| Installation jobs | Field Service |
-| Tickets | Helpdesk |
-| Invoices and payments | Invoicing |
-| Time logs and pay | Timesheets / Payroll |
-| Status steppers and activity timeline | Status bar and chatter |
-| Business rules and DB constraints | `@api.constrains` and SQL constraints |
-| Profit per job | Analytic accounting |
 
 ---
 
