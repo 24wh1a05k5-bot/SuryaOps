@@ -119,12 +119,12 @@ export function AppShell({ children }: { children?: ReactNode }) {
             {drawer ? <X className="h-5 w-5" /> : <MenuIcon className="h-5 w-5" />}
           </button>
           <button onClick={() => setPalette(true)}
-            className="flex h-9 w-full max-w-md items-center gap-2 rounded border border-line bg-surface px-3 text-left text-base text-faint hover:border-line-strong">
+            className="flex h-9 min-w-0 flex-1 max-w-md items-center gap-2 rounded border border-line bg-surface px-3 text-left text-base text-faint hover:border-line-strong">
             <Search className="h-4 w-4" />
             <span className="flex-1 truncate">Find a customer, serial, order or ticket</span>
             <kbd className="hidden rounded border border-line px-1.5 text-xs sm:inline">Ctrl K</kbd>
           </button>
-          <div className="ml-auto flex items-center gap-2">
+          <div className="ml-auto flex shrink-0 items-center gap-2">
             {user?.role === "admin" && <ResetDemoButton />}
             <Menu>
               <MenuTrigger asChild>
