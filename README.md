@@ -1,16 +1,12 @@
 <div align="center">
 
-<img src="rayora_logo.png" alt="Rayora" width="180" />
+<img src="docs/banner.png" alt="Rayora: Smart Solar Management" width="100%" />
 
-# Rayora
+<br /><br />
 
-### Smart solar management, from first enquiry to a 20-year warranty
-
-**Subsidy-ready by design &nbsp;·&nbsp; Every serial traced &nbsp;·&nbsp; Profit on every job**
-
-<br />
-
-[![Live demo](https://img.shields.io/badge/Live_demo-rayora.onrender.com-BC6C25?style=for-the-badge)](https://rayora.onrender.com)
+[![Live demo](https://img.shields.io/badge/▶_Live_demo-rayora.onrender.com-BC6C25?style=for-the-badge)](https://rayora.onrender.com)
+&nbsp;
+[![Docs](https://img.shields.io/badge/📖_Documentation-Read-606C38?style=for-the-badge)](DOCUMENTATION.md)
 
 ![React](https://img.shields.io/badge/React_18-20232A?style=flat-square&logo=react&logoColor=61DAFB)
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
@@ -23,86 +19,175 @@
 
 <br />
 
-<a href="#-the-problem">Problem</a> &nbsp;•&nbsp;
-<a href="#-features">Features</a> &nbsp;•&nbsp;
-<a href="#-screenshots">Screenshots</a> &nbsp;•&nbsp;
-<a href="#-getting-started">Getting started</a> &nbsp;•&nbsp;
-<a href="#-architecture">Architecture</a> &nbsp;•&nbsp;
-<a href="#-built-for-real-world-load">Reliability</a>
-
-<br /><br />
-
-<img src="docs/screenshots/dashboard.png" alt="Rayora dashboard" width="92%" />
+**[The problem](#-the-problem)** &nbsp;·&nbsp;
+**[How it works](#-how-it-works)** &nbsp;·&nbsp;
+**[Features](#-features)** &nbsp;·&nbsp;
+**[Screenshots](#-screenshots)** &nbsp;·&nbsp;
+**[Try it](#-try-it)** &nbsp;·&nbsp;
+**[Tech](#%EF%B8%8F-architecture)** &nbsp;·&nbsp;
+**[Reliability](#%EF%B8%8F-built-for-real-world-load)**
 
 </div>
+
+<br />
+
+<table>
+<tr>
+<td align="center" width="20%"><h2>13</h2><sub>modules, one system</sub></td>
+<td align="center" width="20%"><h2>7</h2><sub>subsidy checks before submission</sub></td>
+<td align="center" width="20%"><h2>6 + 1</h2><sub>staff roles plus a customer view</sub></td>
+<td align="center" width="20%"><h2>100%</h2><sub>of panels and inverters tracked by serial</sub></td>
+<td align="center" width="20%"><h2>15</h2><sub>automated tests on critical rules</sub></td>
+</tr>
+</table>
 
 <br />
 
 ## 🌞 The problem
 
-Rooftop solar installers in India run on WhatsApp chats, spreadsheets and paper. That costs them in three places:
+Rooftop solar is booming in India under **PM Surya Ghar**, but most installers still run on WhatsApp chats, spreadsheets and paper. That costs them in three places:
 
 <table>
 <tr>
-<td width="33%" valign="top" align="center">
-<h3>📄</h3>
-<b>Rejected subsidy claims</b>
-<br /><br />
-PM Surya Ghar claims are rejected for avoidable mistakes: photos without GPS, non-DCR panels, missing serials, names that don't match, installing before DISCOM approval.
+<td width="33%" valign="top">
+
+### 📄 Rejected subsidies
+Claims are rejected for avoidable mistakes: photos without GPS, non-DCR panels, missing serials, names that don't match, installing before DISCOM approval.
+
 </td>
-<td width="33%" valign="top" align="center">
-<h3>🔍</h3>
-<b>Lost traceability</b>
-<br /><br />
-Nobody knows which inverter went to which roof, so warranty claims turn into arguments and stock goes missing.
+<td width="33%" valign="top">
+
+### 🔍 Lost traceability
+Nobody knows which inverter went on which roof, so warranty claims turn into arguments and stock quietly goes missing.
+
 </td>
-<td width="33%" valign="top" align="center">
-<h3>💸</h3>
-<b>Invisible losses</b>
-<br /><br />
-Discounts, labour and free repairs quietly eat margins. Owners can't see which jobs actually made money.
+<td width="33%" valign="top">
+
+### 💸 Invisible losses
+Discounts, labour and free repairs eat margins. Owners can't see which jobs actually made money.
+
 </td>
 </tr>
 </table>
 
 <div align="center">
+<br />
 
-**Rayora replaces all of it with one system, and turns each of those mistakes into a rule the software enforces.**
+> **Rayora replaces all of it with one system, and turns each of those mistakes into a rule the software enforces.**
 
 </div>
+
+<br />
+
+## 🔄 How it works
+
+One customer, one record, from the first enquiry to year twenty:
+
+```mermaid
+flowchart LR
+    A["📥 Enquiry"] --> B["📐 Site survey"]
+    B --> C["🧾 Quote"]
+    C --> D["✅ Confirm"]
+    D --> E["📦 Pick and dispatch"]
+    E --> F["🔧 Install"]
+    F --> G["🏛️ Subsidy"]
+    G --> H["🛡️ 20-year service"]
+    D -.-> I["💰 Invoice"]
+    D -.-> J["📍 Customer tracking"]
+```
 
 <br />
 
 ## ✨ Features
 
-<div align="center">
+<table>
+<tr>
+<td width="33%" valign="top">
 
-| | Module | What it does |
-|:-:|---|---|
-| 📥 | **Leads** | Web, call and WhatsApp enquiries in one inbox. Returning customers are recognised by phone number. Subsidy readiness is checked up front. |
-| 📐 | **Site surveys** | Roof direction, tilt, shade and cable run. **No quote until the survey is approved.** |
-| 🧾 | **Quotes** | Pick a kit and every part fills in. A payback card shows savings, subsidy and years to break even. Non-DCR panels are **blocked** on subsidy orders. |
-| ✅ | **One-click confirm** | A single transaction reserves the exact serials and creates the pick list, crew job, invoice and subsidy case. All or nothing. |
-| 📦 | **Stock & purchases** | Every unit is received with its serial number. Low stock is flagged with **one-click reorders** grouped by supplier. |
-| 🚚 | **Dispatch scanner** | Only serials reserved for *this* order are accepted. Duplicates are refused. Nothing leaves until everything is scanned. |
-| 🛡️ | **Warranty** | Starts automatically on delivery (2 years inverters, 20 years panels). A QR sticker is generated for every unit. |
-| 🔧 | **Installation app** | A phone-first flow: serials, GPS-tagged photos, customer signature. Drafts are saved on the device, so a weak rooftop signal loses nothing. |
-| 📜 | **Handover certificate** | A printable commissioning certificate with every serial, its warranty end date, photos and the customer's signature. |
-| 🏛️ | **Subsidy tracker** | A board from application to money credited, with days in each stage. **Inspection gate:** submission stays locked until every check passes. |
-| 📍 | **Customer tracking** | A public, signed link where customers follow their order like a delivery, including the subsidy steps. |
-| 🎫 | **Service tickets** | Customers scan the QR sticker to report a fault. Warranty decides free or billable. Every repair has a 15-day deadline. |
-| 💰 | **Finance** | Invoices with safe payments (no double charges, no overpaying). Technician pay from logged hours; a month can't be paid twice. |
-| 📊 | **Dashboard** | Profit on every job from the exact cost of each serial used, plus labour and repairs. Money blocked by subsidy delays. Export, print, or share a read-only link. |
+#### 🌐 Customer website
+Savings calculator, how-it-works, FAQ. Every button leads to the enquiry form, pre-filled with the suggested system size.
 
-</div>
+</td>
+<td width="33%" valign="top">
+
+#### 📥 Leads
+Website, call and WhatsApp enquiries in one inbox. Returning customers are recognised by phone. **Name mismatches are flagged before the sale.**
+
+</td>
+<td width="33%" valign="top">
+
+#### 🧾 Quotes
+Pick a kit and every part fills in, with a payback card. **No quote without an approved survey. Non-DCR panels blocked** on subsidy orders.
+
+</td>
+</tr>
+<tr>
+<td valign="top">
+
+#### ✅ One-click confirm
+A single transaction reserves the exact serials and creates the pick list, crew job, invoice and subsidy case. **All or nothing.**
+
+</td>
+<td valign="top">
+
+#### 📦 Stock and dispatch
+Serials recorded on receipt, duplicates refused. **One-click reorders** for low stock. The scanner refuses wrong or duplicate units.
+
+</td>
+<td valign="top">
+
+#### 🔧 Installation app
+Phone-first: serials, **GPS-tagged photos**, customer signature. Drafts saved on the device. **No start before DISCOM approval, no double-booking.**
+
+</td>
+</tr>
+<tr>
+<td valign="top">
+
+#### 🏛️ Subsidy tracker
+A board from application to money credited, with days in each stage. **Submission locked until all 7 checks pass.**
+
+</td>
+<td valign="top">
+
+#### 📍 Tracking and certificate
+Customers follow their order through a **signed link**. A printable **handover certificate** lists every serial and its warranty end date.
+
+</td>
+<td valign="top">
+
+#### 🎫 Service tickets
+Customers **scan a QR sticker** to report a fault. Warranty decides free or billable. **15-day deadline**, GPS proof of every fix.
+
+</td>
+</tr>
+<tr>
+<td valign="top">
+
+#### 💰 Finance
+Invoices with safe payments: **no double charges, no overpaying.** Technician pay from logged hours; a month can't be paid twice.
+
+</td>
+<td valign="top">
+
+#### 📊 Dashboard
+**Profit on every job** from the exact cost of each serial, plus labour and repairs. Money blocked by subsidy delays.
+
+</td>
+<td valign="top">
+
+#### 📤 Sharing
+Export CSV, print to PDF, or share an **expiring read-only link** with no personal data. Light and dark themes throughout.
+
+</td>
+</tr>
+</table>
 
 <br />
 
-### 🏛️ The subsidy inspection gate
-
-<div align="center">
-
-A file can't be submitted for inspection until **all seven checks** pass:
+<details>
+<summary><b>🏛️ The 7-point subsidy inspection gate</b></summary>
+<br />
 
 | | Check |
 |:-:|---|
@@ -114,7 +199,7 @@ A file can't be submitted for inspection until **all seven checks** pass:
 | ✔️ | DISCOM feasibility was approved before installation started |
 | ✔️ | The customer signed the installation report |
 
-</div>
+</details>
 
 <br />
 
@@ -122,67 +207,53 @@ A file can't be submitted for inspection until **all seven checks** pass:
 
 <div align="center">
 
-<h3>Sign in</h3>
-<img src="docs/screenshots/login.png" alt="Login" width="90%" />
+### The customer's first impression
+<img src="docs/screenshots/landing.png" alt="Customer website" width="49%" />
+<img src="docs/screenshots/landing-calculator.png" alt="Savings calculator" width="49%" />
+<sub>The public website and its savings calculator. One tap opens a pre-filled enquiry.</sub>
 
 <br /><br />
 
-<h3>Leads and subsidy readiness</h3>
-<p>Every enquiry in one inbox. Name mismatches are flagged <i>before</i> the sale.</p>
-<img src="docs/screenshots/leads.png" alt="Leads inbox" width="49%" />
-<img src="docs/screenshots/lead-readiness.png" alt="Lead readiness" width="49%" />
+### The owner's morning view
+<img src="docs/screenshots/dashboard.png" alt="Dashboard" width="90%" />
+<sub>Revenue, profit per job, money blocked by subsidy delays, repairs near deadline.</sub>
 
-<br /><br />
-
-<h3>Quotes with payback</h3>
-<p>Kit-based quotes with a savings estimate. Confirming creates the pick list, job, invoice and subsidy case automatically.</p>
-<img src="docs/screenshots/order.png" alt="Order with payback card" width="90%" />
-
-<br /><br />
-
-<h3>Stock, reorders and dispatch</h3>
-<p>Low stock reordered in one click. The scanner refuses duplicate and wrong serials.</p>
-<img src="docs/screenshots/reorder.png" alt="Reorder suggestions" width="49%" />
-<img src="docs/screenshots/dispatch.png" alt="Dispatch scanner" width="49%" />
-
-<br /><br />
-
-<h3>Installations</h3>
-<p>Jobs can't start before DISCOM feasibility approval. Technicians complete them on their phones.</p>
-<img src="docs/screenshots/feasibility-block.png" alt="Feasibility block" width="90%" />
-
-<br /><br />
-
-<h3>Subsidy tracker and inspection gate</h3>
-<img src="docs/screenshots/subsidy-board.png" alt="Subsidy board" width="49%" />
-<img src="docs/screenshots/subsidy-checklist.png" alt="Inspection checklist" width="49%" />
-
-<br /><br />
-
-<h3>Handover certificate</h3>
-<img src="docs/screenshots/certificate.png" alt="Handover certificate" width="90%" />
-
-<br /><br />
-
-<h3>Service tickets</h3>
-<p>Every repair has a 15-day deadline. Warranty decides free or billable.</p>
-<img src="docs/screenshots/tickets.png" alt="Service tickets" width="90%" />
-
-<br /><br />
-
-<h3>On the phone</h3>
-
-<table>
-<tr>
-<td align="center"><img src="docs/screenshots/m-install.png" alt="Installation flow" width="240" /><br /><sub><b>Technician install flow</b></sub></td>
-<td align="center"><img src="docs/screenshots/m-tracking.png" alt="Customer tracking" width="240" /><br /><sub><b>Customer order tracking</b></sub></td>
-<td align="center"><img src="docs/screenshots/m-qr.png" alt="QR warranty page" width="240" /><br /><sub><b>QR sticker warranty page</b></sub></td>
-</tr>
-</table>
+</div>
 
 <br />
 
-<h3>Light and dark</h3>
+<table>
+<tr>
+<td width="50%" align="center"><img src="docs/screenshots/lead-readiness.png" alt="Lead readiness" /><br /><b>Subsidy readiness</b><br /><sub>Name mismatches caught before the sale</sub></td>
+<td width="50%" align="center"><img src="docs/screenshots/order.png" alt="Quote with payback" /><br /><b>Quote with payback</b><br /><sub>Every part listed, subsidy and savings worked out</sub></td>
+</tr>
+<tr>
+<td align="center"><img src="docs/screenshots/dispatch.png" alt="Dispatch scanner" /><br /><b>Dispatch scanner</b><br /><sub>Duplicate and wrong serials refused</sub></td>
+<td align="center"><img src="docs/screenshots/reorder.png" alt="Reorder suggestions" /><br /><b>Reorder suggestions</b><br /><sub>Low stock reordered in one click, by supplier</sub></td>
+</tr>
+<tr>
+<td align="center"><img src="docs/screenshots/feasibility-block.png" alt="Feasibility block" /><br /><b>Approval before install</b><br /><sub>Jobs can't start before DISCOM feasibility</sub></td>
+<td align="center"><img src="docs/screenshots/subsidy-checklist.png" alt="Inspection checklist" /><br /><b>Inspection gate</b><br /><sub>A photo without GPS keeps submission locked</sub></td>
+</tr>
+<tr>
+<td align="center"><img src="docs/screenshots/certificate.png" alt="Handover certificate" /><br /><b>Handover certificate</b><br /><sub>Every serial with its real warranty end date</sub></td>
+<td align="center"><img src="docs/screenshots/tickets.png" alt="Service tickets" /><br /><b>Service tickets</b><br /><sub>15-day deadlines, free or billable by warranty</sub></td>
+</tr>
+</table>
+
+<div align="center">
+
+### On the phone
+
+<table>
+<tr>
+<td align="center"><img src="docs/screenshots/m-install.png" alt="Installation flow" width="230" /><br /><b>Technician</b><br /><sub>Serials, GPS photos, signature</sub></td>
+<td align="center"><img src="docs/screenshots/m-tracking.png" alt="Customer tracking" width="230" /><br /><b>Customer tracking</b><br /><sub>Every step, like a delivery</sub></td>
+<td align="center"><img src="docs/screenshots/m-qr.png" alt="QR warranty page" width="230" /><br /><b>QR sticker</b><br /><sub>Warranty status and one-tap complaints</sub></td>
+</tr>
+</table>
+
+### Light and dark
 <img src="docs/screenshots/dashboard.png" alt="Light theme" width="49%" />
 <img src="docs/screenshots/dashboard-dark.png" alt="Dark theme" width="49%" />
 
@@ -190,91 +261,93 @@ A file can't be submitted for inspection until **all seven checks** pass:
 
 <br />
 
-## 🚀 Getting started
-
-### Try it online
+## 🚀 Try it
 
 <div align="center">
 
-**[rayora.onrender.com](https://rayora.onrender.com)**
-
+### **[▶ rayora.onrender.com](https://rayora.onrender.com)**
 <sub>Free hosting sleeps when idle, so the first visit can take about a minute. Demo data resets on every restart.</sub>
 
-</div>
-
-### Demo logins
-
-<div align="center">
-
-All passwords: **`demo1234`**
+<br />
 
 | Role | Email | Lands on |
 |---|---|---|
-| 👔 Director | `director@sunpower.in` | Dashboard (sees everything) |
+| 👔 **Director** | `director@sunpower.in` | Dashboard (sees everything) |
 | 💼 Sales | `priya@sunpower.in` | Leads |
 | 🔧 Technician | `ravi@sunpower.in` | Installations |
 | 📦 Warehouse | `warehouse@sunpower.in` | Dispatch |
 | 🎧 Support | `support@sunpower.in` | Service tickets |
 | 🧮 Accounts | `accounts@sunpower.in` | Invoices |
+| 🏠 **Customer** | *no login* | The website at `/`, or **Customer ↗** on the login page |
+
+All staff passwords: **`demo1234`**
 
 </div>
 
-**Public pages (no login):** `/enquiry` (website form) · `/u/legacy-demo-unit-0007` (QR page of an out-of-warranty inverter) · `/track/<code>` (customer tracking) · `/shared/<token>` (shared report)
+<details>
+<summary><b>🔗 Public pages (no login)</b></summary>
+<br />
+
+| Page | What it is |
+|---|---|
+| `/` | Customer website with savings calculator |
+| `/enquiry` | Enquiry form |
+| `/track/<code>` | Customer order tracking (signed link) |
+| `/u/legacy-demo-unit-0007` | QR page of an out-of-warranty inverter |
+| `/shared/<token>` | Read-only shared report |
+
+</details>
+
+<details>
+<summary><b>🎬 A 5-minute demo path</b></summary>
+<br />
+
+1. Open the **customer website**, use the savings calculator, and send an enquiry.
+2. Sign in as **Director** and find it in **Leads**. Open **Shabana Begum**: quoting is blocked without an approved survey.
+3. Open **Fatima Siddiqui**: her names don't match. Build a 2 kW quote, try adding a non-DCR panel (blocked), then **Confirm**.
+4. Open the **customer tracking page** for her order.
+5. **Dispatch** → Gopal Krishnan: scan `WAA540-0400015` twice. The second scan is refused.
+6. **Subsidy tracker** → Srinivas Goud: a photo without GPS keeps submission locked.
+7. **Dashboard**: ORD-2026-0007 shows a loss. Switch to dark theme.
+
+Click **Reset demo** in the top bar to start again.
+
+</details>
 
 ### Run it locally
 
 **Requirements:** Python 3.11+, Node 20+, PostgreSQL 16 (or Docker)
 
-**1. Database**
-
 ```bash
+# 1. Database (or use a local PostgreSQL, see DOCUMENTATION.md)
 docker compose up -d
-```
 
-<details>
-<summary>Using a local PostgreSQL instead of Docker</summary>
-
-```bash
-psql postgres -c "CREATE USER suryaops WITH PASSWORD 'suryaops' CREATEDB;"
-psql postgres -c "CREATE DATABASE suryaops OWNER suryaops;"
-```
-
-</details>
-
-**2. Backend** (in one terminal)
-
-```bash
+# 2. Backend (terminal 1)
 cd backend
-python -m venv .venv && source .venv/bin/activate
+python -m venv .venv && source .venv/bin/activate     # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
-cp .env.example .env              # then set a long random JWT_SECRET
-alembic upgrade head              # create the tables
-python -m app.seed.seed           # load the demo data
+cp .env.example .env                                    # then set a long random JWT_SECRET
+alembic upgrade head
+python -m app.seed.seed
 uvicorn app.main:app --reload --port 8000
-```
 
-**3. Frontend** (in a second terminal)
-
-```bash
+# 3. Frontend (terminal 2)
 cd frontend
 npm install
 npm run dev
 ```
 
-Open **http://localhost:5173**. API docs are at **http://localhost:8000/docs**.
+Open **http://localhost:5173**. Interactive API docs are at **/docs** on the backend (port 8000).
 
-**Reset the demo data** at any time with `python -m app.seed.seed --reset`, or the **Reset demo** button in the top bar when signed in as Director.
-
-### Run the tests
+<details>
+<summary><b>🧪 Tests</b></summary>
+<br />
 
 ```bash
 cd backend && pytest -q
 ```
 
-<details>
-<summary>What the 15 tests cover</summary>
-
-Quote blocked without an approved survey · non-DCR panels refused in subsidy orders · stock rollback when confirmation fails · two people reserving the same stock at once · duplicate serials refused · warranty dates from delivery · technician double-booking refused · payment idempotency and overpayment · the inspection gate · feasibility before installation · free vs billable repairs · pay runs · role-based access · the public QR page
+The 15 tests cover: quote blocked without an approved survey · non-DCR panels refused in subsidy orders · stock rollback on failure · two people reserving the same stock at once · duplicate serials refused · warranty dates from delivery · technician double-booking · payment idempotency and overpayment · the inspection gate · feasibility before installation · free vs billable repairs · pay runs · role-based access · the public QR page
 
 </details>
 
@@ -282,37 +355,37 @@ Quote blocked without an approved survey · non-DCR panels refused in subsidy or
 
 ## 🏗️ Architecture
 
-<div align="center">
-
+```mermaid
+flowchart LR
+    subgraph Client["🖥️ Browser and phone"]
+        W["Customer website<br/>enquiry · tracking · QR"]
+        S["Staff app<br/>6 roles"]
+    end
+    subgraph API["⚙️ FastAPI"]
+        R["Routers<br/>role checks · rate limits"]
+        SV["Services<br/>all business rules"]
+    end
+    DB[("🐘 PostgreSQL<br/>constraints · row locks")]
+    W -- JSON --> R
+    S -- "JSON + JWT" --> R
+    R --> SV
+    SV -- "SQLAlchemy" --> DB
 ```
-┌───────────────────────┐        ┌───────────────────────────────┐        ┌───────────────────────┐
-│    React + Vite       │  JSON  │            FastAPI            │  SQL   │     PostgreSQL 16     │
-│                       │ ─────► │                               │ ─────► │                       │
-│  Staff app (6 roles)  │  JWT   │  routers → services → ORM     │        │  constraints, locks   │
-│  Public pages         │        │  role checks · rate limits    │        │  sequences, indexes   │
-│  Light / dark themes  │        │  one error format             │        │                       │
-└───────────────────────┘        └───────────────────────────────┘        └───────────────────────┘
-```
-
-</div>
-
-<div align="center">
 
 | Layer | Technology | Why |
 |---|---|---|
-| **Frontend** | React 18, TypeScript (strict), Vite | Fast, type-safe UI with route-level code splitting |
+| **Frontend** | React 18, TypeScript (strict), Vite | Fast, type-safe UI with page-level code splitting |
 | **Styling** | Tailwind CSS with CSS-variable design tokens | One palette, two themes, consistent everywhere |
-| **Data fetching** | TanStack Query | Caching, background refresh and smart retries |
-| **UI parts** | Radix UI, Recharts, lucide icons, sonner, signature_pad | Accessible dialogs and menus, charts, signatures |
+| **Data** | TanStack Query, React Router | Caching, background refresh, smart retries, role-guarded routes |
+| **UI parts** | Radix UI, Recharts, lucide, sonner, signature_pad | Accessible dialogs, charts, icons, toasts, signatures |
 | **Backend** | FastAPI, Pydantic v2 | Typed, validated, self-documenting API |
 | **Database** | PostgreSQL 16, SQLAlchemy 2.0, Alembic | Transactions, row locks and constraints as the last line of defence |
-| **Security** | JWT, bcrypt, slowapi | Role checks on every route, rate-limited public endpoints |
-| **Deployment** | Docker, Render | One container serves the API and the app from a single URL |
-
-</div>
+| **Security** | JWT, bcrypt, slowapi, HMAC-signed links | Role checks on every request, rate-limited public pages |
+| **Deployment** | Docker (multi-stage), Render | One container serves the API and the app from a single URL |
 
 <details>
-<summary><b>Project layout</b></summary>
+<summary><b>📁 Project layout</b></summary>
+<br />
 
 ```
 backend/
@@ -325,11 +398,11 @@ backend/
   alembic/         database migrations
   tests/           tests for the critical rules
 frontend/
-  src/styles/      design tokens (light and dark)
-  src/lib/         API client, auth, theme, formatting, hooks
+  src/features/    one file per area of the app, plus the customer website
   src/components/  UI kit and shared parts (shell, tables, stepper, search, capture)
-  src/features/    one file per area of the app
-docs/screenshots/  images used in this README
+  src/lib/         API client, auth, theme, formatting, hooks
+  src/styles/      design tokens (light and dark)
+docs/              banner and screenshots for this README
 ```
 
 </details>
@@ -344,16 +417,16 @@ docs/screenshots/  images used in this README
 
 **⚡ Concurrency**
 - Every multi-step action runs in one transaction
-- Stock is reserved with `SELECT … FOR UPDATE SKIP LOCKED`
-- Version columns stop silent overwrites; stale edits get a clear message
+- Stock reserved with `SELECT … FOR UPDATE SKIP LOCKED`
+- Version columns stop silent overwrites
 
 **💳 Money safety**
-- Idempotency keys on order confirmation and payments
+- Idempotency keys on confirmation and payments
 - `CHECK (amount_paid <= total)` in the database
-- Pay runs are unique per technician per month
+- One pay run per technician per month
 
-**🗄️ The database as the last line of defence**
-- Unique serials, phone numbers and document numbers
+**🗄️ Database as the last line of defence**
+- Unique serials, phones and document numbers
 - Stock can't go negative; time ranges must be valid
 
 </td>
@@ -362,19 +435,18 @@ docs/screenshots/  images used in this README
 **📈 Scale**
 - Server-side pagination, filtering and search
 - Indexes on the busiest queries
-- SQL aggregates with a dashboard cache that clears on every write
+- SQL aggregates with a cache that clears on every write
 - Connection pooling, GZip, code splitting
 
 **🔁 Resilience**
-- One error format with request IDs, JSON logs, health check
+- One error format with request IDs; JSON logs
 - "Connection lost" banner with automatic retry
-- Install drafts saved on the device; per-photo upload retry
-- Photos compressed on the phone before upload
+- Install drafts saved on the device; photo retry
 
 **🔐 Security**
-- bcrypt passwords, JWT sessions, role checks on every request
+- bcrypt passwords, JWT sessions, server-side role checks
 - Technicians only ever see their own jobs
-- Public pages show masked names; share links expire and can be revoked
+- Masked names on public pages; share links expire
 
 </td>
 </tr>
@@ -386,11 +458,11 @@ docs/screenshots/  images used in this README
 
 <div align="center">
 
-| Document | What's inside |
-|---|---|
-| [**DOCUMENTATION.md**](DOCUMENTATION.md) | Full guide: setup, every module, business rules, API, troubleshooting |
-| [**spec.md**](spec.md) | Product and technical specification |
-| [**API reference**](http://localhost:8000/docs) | Interactive docs, available while the backend is running |
+| | Document | What's inside |
+|:-:|---|---|
+| 📖 | [**DOCUMENTATION.md**](DOCUMENTATION.md) | Setup, every module, business rules, API, troubleshooting |
+| 📋 | [**spec.md**](spec.md) | Product and technical specification |
+| ⚙️ | **`/docs`** on the running backend | Interactive API reference |
 
 </div>
 
@@ -400,7 +472,7 @@ docs/screenshots/  images used in this README
 
 <div align="center">
 
-<img src="rayora_logo.png" alt="Rayora" width="64" />
+<img src="rayora_logo.png" alt="Rayora" width="72" />
 
 **Rayora** · Smart Solar Management
 
